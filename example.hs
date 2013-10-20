@@ -21,19 +21,18 @@ processNames surname (name:names) = ret : processNames surname names
         cleanedFullName = removeNonAlpha fullName
         fullName = capitalize name ++ " " ++ capitalize surname
 
-getFirstNames' :: [String] -> IO [String]
-getFirstNames' names = do
+getLines :: IO [String]
+getLines = do
   line <- getLine
   if line == ""
-    then return names
-    else getFirstNames' (names ++ [line])
-
-getFirstNames :: IO [String]
-getFirstNames = getFirstNames' []
+    then return []
+    else do
+    lines <- getLines
+    return (line:lines)
 
 main = do
   putStrLn "Enter first names followed by an empty line"
-  names <- getFirstNames
+  names <- getLines
   putStrLn "Enter surname"
   surname <- getLine
   let fullNames = processNames surname names
