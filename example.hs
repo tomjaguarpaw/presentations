@@ -1,7 +1,8 @@
-{-# OPTIONS_GHC -fno-warn-unused-matches #-}
+{-# OPTIONS_GHC -fno-warn-unused-matches -fno-warn-unused-imports #-}
 
 import Prelude hiding (map, foldr, (.), lines)
 import Data.Char (isAlpha, toUpper, isSpace)
+import Control.Monad ((<=<))
 
 map :: (a -> b) -> [a] -> [b]
 map f [] = []
@@ -10,6 +11,9 @@ map f (x:xs) = f x : map f xs
 foldr :: (a -> b -> b) -> b -> [a] -> b
 foldr f z [] = z
 foldr f z (x:xs) = f x (foldr f z xs)
+
+(.) :: (b -> c) -> (a -> b) -> (a -> c)
+(f . g) x = f (g x)
 
 removeNonAlphaList :: [String] -> [String]
 removeNonAlphaList [] = []
