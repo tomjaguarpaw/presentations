@@ -1,4 +1,15 @@
+{-# OPTIONS_GHC -fno-warn-unused-matches #-}
+
+import Prelude hiding (map, foldr, (.), lines)
 import Data.Char (isAlpha, toUpper, isSpace)
+
+map :: (a -> b) -> [a] -> [b]
+map f [] = []
+map f (x:xs) = f x : map f xs
+
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr f z [] = z
+foldr f z (x:xs) = f x (foldr f z xs)
 
 removeNonAlphaList :: [String] -> [String]
 removeNonAlphaList [] = []
@@ -30,6 +41,7 @@ getLines = do
     lines <- getLines
     return (line:lines)
 
+main :: IO ()
 main = do
   putStrLn "Enter first names followed by an empty line"
   names <- getLines
