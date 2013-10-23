@@ -1,4 +1,4 @@
-clear && ghc -fforce-recomp -Wall -Werror Main.hs && ./Main > testOut <<EOF
+clear && ghc -fforce-recomp -Wall Main.hs && ./Main > testOut <<EOF
 Bob!@#
 Stan123
 ///Doris///
