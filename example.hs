@@ -4,16 +4,7 @@ import Prelude hiding (map, foldr, (.), lines)
 import Data.Char (isAlpha, toUpper, isSpace)
 import Control.Monad ((<=<))
 
-map :: (a -> b) -> [a] -> [b]
-map f [] = []
-map f (x:xs) = f x : map f xs
-
-foldr :: (a -> b -> b) -> b -> [a] -> b
-foldr f z [] = z
-foldr f z (x:xs) = f x (foldr f z xs)
-
-(.) :: (b -> c) -> (a -> b) -> (a -> c)
-(f . g) x = f (g x)
+-- Module implementation
 
 removeNonAlphaList :: [String] -> [String]
 removeNonAlphaList [] = []
@@ -45,8 +36,8 @@ getLines = do
     lines <- getLines
     return (line:lines)
 
-main :: IO ()
-main = do
+run :: IO ()
+run = do
   putStrLn "Enter first names followed by an empty line"
   names <- getLines
   putStrLn "Enter surname"
@@ -54,3 +45,24 @@ main = do
   let fullNames = processNames surname names
   putStrLn "The familiy details are:"
   mapM_ putStrLn fullNames
+
+main :: IO ()
+main = run
+
+-- Combinators
+
+map :: (a -> b) -> [a] -> [b]
+map f [] = []
+map f (x:xs) = f x : map f xs
+
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr f z [] = z
+foldr f z (x:xs) = f x (foldr f z xs)
+
+(.) :: (b -> c) -> (a -> b) -> (a -> c)
+(f . g) x = f (g x)
+
+(=<<) :: Monad m => (a -> m b) -> m a -> m b
+f =<< m = do
+  x <- m
+  f x
