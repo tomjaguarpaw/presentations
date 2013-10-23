@@ -17,13 +17,13 @@ getLines = do
     return (line:lines)
 
 runTests capitalize removeNonAlpha removeNonAlphaList processNames = do
-  check (capitalize "hello") "Hello"
+  check (capitalize "hello") "HELLO"
   check (removeNonAlpha "abc 123!@# def") "abc  def"
   check (removeNonAlphaList [ "abc 123!@# def" , ")(*&xyz<>." ])
                             [ "abc  def", "xyz" ]
   check (processNames "Smith" [ "Bob123by", "Sal%$#ly" ])
-                              [ "There is a family member called Bobby Smith"
-                              , "There is a family member called Sally Smith" ]
+                              [ "THERE IS A FAMILY MEMBER CALLED BOBBY SMITH"
+                              , "THERE IS A FAMILY MEMBER CALLED SALLY SMITH"]
 
 check :: (Eq a, Show a) => a -> a -> IO ()
 check a b = when (a /= b) $ do

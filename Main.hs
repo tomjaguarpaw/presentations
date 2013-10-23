@@ -19,16 +19,16 @@ removeNonAlpha (x:xs) = if isAlpha x || isSpace x
                         then x : removeNonAlpha xs
                         else removeNonAlpha xs
 
-capitalize :: String -> String
-capitalize [] = []
-capitalize (x:xs) = toUpper x : xs
+upperOfString :: String -> String
+upperOfString [] = []
+upperOfString (x:xs) = toUpper x : upperOfString xs
 
 processNames :: String -> [String] -> [String]
 processNames surname [] = []
 processNames surname (name:names) = ret : processNames surname names
-  where ret = "There is a family member called " ++ cleanedFullName
+  where ret = "THERE IS A FAMILY MEMBER CALLED " ++ cleanedFullName
         cleanedFullName = removeNonAlpha fullName
-        fullName = capitalize name ++ " " ++ capitalize surname
+        fullName = upperOfString name ++ " " ++ upperOfString surname
 
 run :: IO ()
 run = do
@@ -63,4 +63,6 @@ f =<< m = do
 -- Test and run
 
 main :: IO ()
-main = runTests capitalize removeNonAlpha removeNonAlphaList processNames >> run
+main = do
+  runTests upperOfString removeNonAlpha removeNonAlphaList processNames
+  run
