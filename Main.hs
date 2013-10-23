@@ -1,8 +1,8 @@
-{-# OPTIONS_GHC -fno-warn-unused-matches -fno-warn-unused-imports #-}
+module Main where
 
 import Prelude hiding (map, foldr, (.), lines)
 import Data.Char (isAlpha, toUpper, isSpace)
-import Control.Monad ((<=<))
+import Helpers (getLines, runTests)
 
 -- Module implementation
 
@@ -27,15 +27,6 @@ processNames surname (name:names) = ret : processNames surname names
         cleanedFullName = removeNonAlpha fullName
         fullName = capitalize name ++ " " ++ capitalize surname
 
-getLines :: IO [String]
-getLines = do
-  line <- getLine
-  if line == ""
-    then return []
-    else do
-    lines <- getLines
-    return (line:lines)
-
 run :: IO ()
 run = do
   putStrLn "Enter first names followed by an empty line"
@@ -46,8 +37,6 @@ run = do
   putStrLn "The familiy details are:"
   mapM_ putStrLn fullNames
 
-main :: IO ()
-main = run
 
 -- Combinators
 
@@ -66,3 +55,9 @@ foldr f z (x:xs) = f x (foldr f z xs)
 f =<< m = do
   x <- m
   f x
+
+
+-- Test and run
+
+main :: IO ()
+main = runTests capitalize removeNonAlpha removeNonAlphaList processNames >> run
