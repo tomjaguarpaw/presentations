@@ -4,6 +4,7 @@ import Prelude hiding (map, foldr, (.), lines)
 import Data.Char (isAlpha, toUpper, isSpace)
 import Helpers (getLines, runTests)
 
+
 -- Module implementation
 
 removeNonAlphaList :: [String] -> [String]
