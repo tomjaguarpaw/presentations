@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-unused-matches #-}
+
 module Main where
 
 import Prelude hiding (map, foldr, (.), lines)
