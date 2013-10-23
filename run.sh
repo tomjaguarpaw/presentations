@@ -1,9 +1,9 @@
 clear && ghc -fforce-recomp -Wall -Werror Main.hs && ./Main > testOut <<EOF
-Bob
-Stan
-Doris
+Bob!@#
+Stan123
+///Doris///
 
-Jones
+%Jones%
 EOF
 
 diff -u expectedOut testOut
