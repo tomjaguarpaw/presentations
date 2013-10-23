@@ -3,6 +3,9 @@
 -- This code is available from
 --
 -- https://github.com/tomjaguarpaw
+--
+-- The "Stages" directory contains intermediate version of the
+-- refactoring if you want look back at any time.
 
 module Main where
 
