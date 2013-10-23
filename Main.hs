@@ -35,7 +35,7 @@ run = do
   putStrLn "Enter surname"
   surname <- getLine
   let fullNames = processNames surname names
-  putStrLn "The familiy details are:"
+  putStrLn "The family details are:"
   mapM_ putStrLn fullNames
 
 
