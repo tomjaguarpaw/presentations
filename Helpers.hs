@@ -1,5 +1,8 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 module Helpers where
 
+import Prelude hiding (lines)
 import System.Exit (exitFailure)
 import Control.Monad (when)
 

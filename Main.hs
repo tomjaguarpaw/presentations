@@ -2,7 +2,7 @@
 
 module Main where
 
-import Prelude hiding (map, foldr, (.), lines)
+import Prelude hiding (map, foldr, (.))
 import Data.Char (isAlpha, toUpper, isSpace)
 import Helpers (getLines, runTests)
 
