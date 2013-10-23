@@ -16,11 +16,9 @@ getLines = do
     lines <- getLines
     return (line:lines)
 
-runTests capitalize removeNonAlpha removeNonAlphaList processNames = do
+runTests capitalize removeNonAlpha processNames = do
   check (capitalize "hello") "HELLO"
   check (removeNonAlpha "abc 123!@# def") "abc  def"
-  check (removeNonAlphaList [ "abc 123!@# def" , ")(*&xyz<>." ])
-                            [ "abc  def", "xyz" ]
   check (processNames "Smith" [ "Bob123by", "Sal%$#ly" ])
                               [ "THERE IS A FAMILY MEMBER CALLED BOBBY SMITH"
                               , "THERE IS A FAMILY MEMBER CALLED SALLY SMITH"]

@@ -9,19 +9,15 @@ import Helpers (getLines, runTests)
 
 -- Module implementation
 
-removeNonAlphaList :: [String] -> [String]
-removeNonAlphaList [] = []
-removeNonAlphaList (x:xs) = removeNonAlpha x : removeNonAlphaList xs
+upperOfString :: String -> String
+upperOfString [] = []
+upperOfString (x:xs) = toUpper x : upperOfString xs
 
 removeNonAlpha :: String -> String
 removeNonAlpha [] = []
 removeNonAlpha (x:xs) = if isAlpha x || isSpace x
                         then x : removeNonAlpha xs
                         else removeNonAlpha xs
-
-upperOfString :: String -> String
-upperOfString [] = []
-upperOfString (x:xs) = toUpper x : upperOfString xs
 
 processNames :: String -> [String] -> [String]
 processNames surname [] = []
@@ -64,5 +60,5 @@ f =<< m = do
 
 main :: IO ()
 main = do
-  runTests upperOfString removeNonAlpha removeNonAlphaList processNames
+  runTests upperOfString removeNonAlpha processNames
   run
