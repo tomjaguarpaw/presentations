@@ -3,7 +3,6 @@
 module Helpers where
 
 import Prelude hiding (lines)
-import System.Exit (exitFailure)
 import Control.Monad (when)
 
 -- Helper functions
@@ -25,12 +24,9 @@ runTests capitalize removeNonAlpha removeNonAlphaList processNames = do
   check (processNames "Smith" [ "Bob123by", "Sal%$#ly" ])
                               [ "There is a family member called Bobby Smith"
                               , "There is a family member called Sally Smith" ]
-  putStrLn "Tests completed"
-  putStrLn ""
 
 check :: (Eq a, Show a) => a -> a -> IO ()
 check a b = when (a /= b) $ do
   putStrLn "Test failed"
   print a
   print b
-  exitFailure
