@@ -1,5 +1,9 @@
 {-# OPTIONS_GHC -fno-warn-unused-matches #-}
 
+-- This code is available from
+--
+-- https://github.com/tomjaguarpaw
+
 module Main where
 
 import Prelude hiding (map, foldr, (.), (=<<))
