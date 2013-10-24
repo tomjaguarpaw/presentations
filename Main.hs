@@ -4,7 +4,7 @@
 --
 -- https://github.com/tomjaguarpaw
 --
--- The "Stages" directory contains intermediate version of the
+-- The "Stages" directory contains intermediate versions of the
 -- refactoring if you want look back at any time.
 
 module Main where
