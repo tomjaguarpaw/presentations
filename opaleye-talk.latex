@@ -36,34 +36,6 @@ FROM person_table
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Tables of records}
-
-\begin{minted}{haskell}
-data Person a b c = Person { pId :: a,
-                             pName :: b,
-                             pCityId :: c }
-
-personTable :: Query (Person (Wire PersonId)
-                             (Wire String)
-                             (Wire CityId))
-
-runQueryDefault personTable :: [Person PersonId String CityId]
-\end{minted}
-
-\begin{minted}{sql}
-SELECT person_id, person_name, person_city_id
-FROM person_table
-\end{minted}
-
-\begin{minted}{haskell}
-[Person {pId = PersonId 1, pName = "Tom", pCityId = CityId 1},
- ...]
-
-\end{minted}
-
-\end{frame}
-
-\begin{frame}[fragile]
 \frametitle{A query}
 
 \begin{itemize}
@@ -102,6 +74,35 @@ FROM   person_table, city_table, country_table
 WHERE  person_city_id = city_id
 AND    city_country_id = country_id
 \end{minted}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Type safety}
+
+Errors prevented at compile time
+
+\begin{itemize}
+
+\item Comparing an (integer) ID and a string
+
+\begin{minted}{haskell}
+    ...
+    restrict <<< eq -< (cityId, personName)
+    ...
+\end{minted}
+
+\item Comparing two incompatible IDs even though they are both
+  integers in the database
+
+\begin{minted}{haskell}
+    ...
+    restrict <<< eq -< (cityId, personId)
+    ...
+\end{minted}
+
+\end{itemize}
+
 
 \end{frame}
 
