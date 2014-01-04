@@ -156,5 +156,24 @@ countries = proc () -> do
 
 \end{frame}
 
+\begin{frame}
+\frametitle{Summary}
+
+Opaleye is an approach to relational queries which is
+
+\begin{itemize}
+\item type safe
+\item composable
+\end{itemize}
+
+I didn't have time to talk about
+
+\begin{itemize}
+\item in Opaleye aggregation is type safe and composable
+\item this is why we use Arrows rather than Monads
+\item both HaskellDB and Esqueleto get this wrong
+\end{itemize}
+
+\end{frame}
 
 \end{document}
