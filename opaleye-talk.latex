@@ -66,6 +66,17 @@ FROM person_table
 \begin{frame}[fragile]
 \frametitle{A query}
 
+\begin{itemize}
+\item for each person
+\item look up their city
+\item look up that city's country
+\item return ``\emph{person name} lives in \emph{country name}''
+\end{itemize}
+
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{A query}
+
 \begin{minted}{haskell}
 countries :: Query (Wire String)
 countries = proc () -> do
