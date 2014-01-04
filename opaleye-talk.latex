@@ -10,7 +10,7 @@
 
 \begin{document}
 
-\maketitle
+{\Large \maketitle}
 
 \begin{frame}[fragile]
 \frametitle{Tables of tuples}
