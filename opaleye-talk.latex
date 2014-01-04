@@ -38,7 +38,7 @@ FROM person_table
 
 \begin{itemize}
 \item There are no restrictions on what Haskell datatypes you can
-  store Wires in.  You can use Haskell records, lenses, etc\. ...
+  store Wires in.  You can use Haskell records, lenses, etc.\ ...
 \end{itemize}
 }
 \end{frame}
