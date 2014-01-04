@@ -28,9 +28,9 @@ FROM person_table
 
 \begin{minted}{haskell}
 [ (PersonId 1, "Tom", CityId 1),
-  (PersonId 2, "Simon", CityId 2),
-  (PersonId 2, "Duncan", CityId 3),
-  (PersonId 2, "Clemens", CityId 4) ]
+  (PersonId 2, "Simon", CityId 1),
+  (PersonId 3, "Duncan", CityId 2),
+  (PersonId 4, "Clemens", CityId 3) ]
 \end{minted}
 
 \end{frame}
