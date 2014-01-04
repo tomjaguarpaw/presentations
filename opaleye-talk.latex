@@ -10,6 +10,8 @@
 
 \begin{document}
 
+% TODO: \large{ ... contents ...} should be {\large ... contents ... }
+
 {\Large \maketitle}
 
 \begin{frame}[fragile]
