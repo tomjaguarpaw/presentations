@@ -1,5 +1,7 @@
 \documentclass{beamer}
 
+\usepackage{minted}
+
 \title{Opaleye}
 
 \author{Tom Ellis}
@@ -10,9 +12,15 @@
 
 \maketitle
 
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{First Slide}
 Contents of the first slide
+
+\begin{minted}{haskell}
+f = 0
+\end{minted}
+
+
 \end{frame}
 
 \begin{frame}
