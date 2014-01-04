@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[10pt]{beamer}
 
 \usepackage{minted}
 
@@ -13,19 +13,54 @@
 \maketitle
 
 \begin{frame}[fragile]
-\frametitle{First Slide}
-Contents of the first slide
+\frametitle{Tables of tuples}
 
 \begin{minted}{haskell}
-f = 0
+personTable :: Query (Wire PersonId, Wire String, Wire CityId)
+
+runQueryDefault personTable :: [(PersonId, String, CityId)]
 \end{minted}
 
+\begin{minted}{sql}
+SELECT person_id, person_name, person_city_id
+FROM person_table
+\end{minted}
+
+\begin{minted}{haskell}
+[ (PersonId 1, "Tom", CityId 1),
+  (PersonId 2, "Simon", CityId 2),
+  (PersonId 2, "Duncan", CityId 3),
+  (PersonId 2, "Clemens", CityId 4) ]
+\end{minted}
 
 \end{frame}
 
-\begin{frame}
-\frametitle{Second Slide}
-Contents of the second slide
+\begin{frame}[fragile]
+\frametitle{Tables of records}
+
+\begin{minted}{haskell}
+data Person a b c = Person { pId :: a,
+                             pName :: b,
+                             pCityId :: c }
+
+personTable :: Query (Person (Wire PersonId)
+                             (Wire String)
+                             (Wire CityId))
+
+runQueryDefault personTable :: [Person PersonId String CityId]
+\end{minted}
+
+\begin{minted}{sql}
+SELECT person_id, person_name, person_city_id
+FROM person_table
+\end{minted}
+
+\begin{minted}{haskell}
+[Person {pId = PersonId 1, pName = "Tom", pCityId = CityId 1},
+ ...]
+
+\end{minted}
+
 \end{frame}
 
 \end{document}
