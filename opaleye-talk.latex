@@ -63,4 +63,81 @@ FROM person_table
 
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{A query}
+
+\begin{minted}{haskell}
+countries :: Query (Wire String)
+countries = proc () -> do
+    (_, personName, personCityId) <- personTable  -< ()
+    (cityId, _, cityCountryId)    <- cityTable    -< ()
+    (countryId, _, countryCode)   <- countryTable -< ()
+
+    restrict <<< eq -< (personCityId, cityId)
+    restrict <<< eq -< (cityCountryId, countryName)
+
+    lives_in_string <- constant " lives in " -< ()
+    cat3 -< (personName, lives_in_string, country_code)
+\end{minted}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{A query}
+
+\begin{minted}{sql}
+SELECT person_name || ' lives in ' || country_name
+FROM   person_table, city_table, country_table
+WHERE  person_city_id = city_id
+AND    city_country_id = country_id
+\end{minted}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Composibility}
+
+\begin{minted}{haskell}
+
+livesIn :: QueryArr (Wire String, Wire String) (Wire String)
+livesIn = proc (personName, countryName) -> do
+    lives_in_string <- constant " lives in " -< ()
+    cat3 -< (personName, lives_in_string, countryName)
+
+countryOfCity :: QueryArr (Wire CityId) (Wire CountryId)
+countryOfCity = proc cityId -> do
+    (cityId', _, cityCountryId)   <- countryTable -< ()
+    restrict <<< eq -< (cityId, cityCountryId)
+    returnA -< cityCountryId
+
+countryNameOfCountry :: QueryArr (Wire CountryId) (Wire String)
+...
+
+countryNameOfCity :: QueryArr (Wire CityId) (Wire String)
+countryNameOfCity = countryNameOfCountry <<< countryOfCity
+\end{minted}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Composibility}
+
+\begin{minted}{haskell}
+countries :: Query (Wire String)
+countries = proc () -> do
+    (_, personName, personCityId) <- personTable  -< ()
+    countryName <- countryNameOfCity -< personCityId
+    livesIn -< (personName, countryName)
+\end{minted}
+
+\begin{minted}{haskell}
+[ "Tom lives in UK",
+  "Simon lives in UK",
+  "Duncan lives in UK",
+  "Clemens lives in NL" ]
+\end{minted}
+
+\end{frame}
+
+
 \end{document}
