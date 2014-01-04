@@ -15,10 +15,13 @@
 \begin{frame}[fragile]
 \frametitle{Tables of tuples}
 
+\large{
 \begin{minted}{haskell}
-personTable :: Query (Wire PersonId, Wire String, Wire CityId)
+personTable :: Query (Wire PersonId, Wire String,
+                      Wire CityId)
 
-runQueryDefault personTable :: [(PersonId, String, CityId)]
+runQueryDefault personTable :: [(PersonId, String,
+                                 CityId)]
 \end{minted}
 
 \begin{minted}{sql}
@@ -37,58 +40,63 @@ FROM person_table
 \item There are no restrictions on what Haskell datatypes you can
   store Wires in.  You can use Haskell records, lenses, etc\. ...
 \end{itemize}
-
+}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{A query}
 
+\Large{
 \begin{itemize}
 \item for each person
 \item look up their city
 \item look up that city's country
 \item return ``\emph{person name} lives in \emph{country name}''
 \end{itemize}
+}
 
 \end{frame}
 \begin{frame}[fragile]
 \frametitle{A query}
 
+\large{
 \begin{minted}{haskell}
 countries :: Query (Wire String)
 countries = proc () -> do
-    (_, personName, personCityId) <- personTable  -< ()
-    (cityId, _, cityCountryId)    <- cityTable    -< ()
-    (countryId, _, countryCode)   <- countryTable -< ()
+  (_, personName, personCityId) <- personTable  -< ()
+  (cityId, _, cityCountryId)    <- cityTable    -< ()
+  (countryId, _, countryCode)   <- countryTable -< ()
 
-    restrict <<< eq -< (personCityId, cityId)
-    restrict <<< eq -< (cityCountryId, countryName)
+  restrict <<< eq -< (personCityId, cityId)
+  restrict <<< eq -< (cityCountryId, countryName)
 
-    lives_in_string <- constant " lives in " -< ()
-    cat3 -< (personName, lives_in_string, country_code)
+  lives_in_string <- constant " lives in " -< ()
+  cat3 -< (personName, lives_in_string, country_code)
 \end{minted}
-
+}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{A query}
 
+\large{
 \begin{minted}{sql}
 SELECT person_name || ' lives in ' || country_name
 FROM   person_table, city_table, country_table
 WHERE  person_city_id = city_id
 AND    city_country_id = country_id
 \end{minted}
+}
 
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Type safety}
 
+\large{
 Errors prevented at compile time
 
 \begin{itemize}
-
 \item Comparing an (integer) ID and a string
 
 \begin{minted}{haskell}
@@ -107,7 +115,7 @@ Errors prevented at compile time
 \end{minted}
 
 \end{itemize}
-
+}
 
 \end{frame}
 
@@ -139,12 +147,13 @@ countryNameOfCity = countryNameOfCountry <<< countryOfCity
 \begin{frame}[fragile]
 \frametitle{Composability}
 
+\large{
 \begin{minted}{haskell}
 countries :: Query (Wire String)
 countries = proc () -> do
-    (_, personName, personCityId) <- personTable  -< ()
-    countryName <- countryNameOfCity -< personCityId
-    livesIn -< (personName, countryName)
+  (_, personName, personCityId) <- personTable  -< ()
+  countryName <- countryNameOfCity -< personCityId
+  livesIn -< (personName, countryName)
 \end{minted}
 
 \begin{minted}{haskell}
@@ -153,12 +162,14 @@ countries = proc () -> do
   "Duncan lives in UK",
   "Clemens lives in NL" ]
 \end{minted}
+}
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Summary}
 
+\Large{
 Opaleye is an approach to relational queries which is
 
 \begin{itemize}
@@ -169,11 +180,11 @@ Opaleye is an approach to relational queries which is
 I didn't have time to talk about
 
 \begin{itemize}
-\item in Opaleye aggregation is type safe and composable
+\item aggregation is type safe and composable
 \item this is why we use Arrows rather than Monads
 \item both HaskellDB and Esqueleto get this wrong
 \end{itemize}
-
+}
 \end{frame}
 
 \end{document}
