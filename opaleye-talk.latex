@@ -134,7 +134,7 @@ livesIn = proc (personName, countryName) -> do
 countryOfCity :: QueryArr (Wire CityId) (Wire CountryId)
 countryOfCity = proc cityId -> do
     (cityId', _, cityCountryId)   <- countryTable -< ()
-    restrict <<< eq -< (cityId, cityCountryId)
+    restrict <<< eq -< (cityId, cityId')
     returnA -< cityCountryId
 
 countryNameOfCountry :: QueryArr (Wire CountryId) (Wire String)
