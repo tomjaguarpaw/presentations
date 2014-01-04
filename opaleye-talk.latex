@@ -112,7 +112,7 @@ Errors prevented at compile time
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Composibility}
+\frametitle{Composability}
 
 \begin{minted}{haskell}
 
@@ -137,7 +137,7 @@ countryNameOfCity = countryNameOfCountry <<< countryOfCity
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Composibility}
+\frametitle{Composability}
 
 \begin{minted}{haskell}
 countries :: Query (Wire String)
