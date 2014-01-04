@@ -1,0 +1,23 @@
+\documentclass{beamer}
+
+\title{Opaleye}
+
+\author{Tom Ellis}
+
+\date{10th January 2013}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{First Slide}
+Contents of the first slide
+\end{frame}
+
+\begin{frame}
+\frametitle{Second Slide}
+Contents of the second slide
+\end{frame}
+
+\end{document}
