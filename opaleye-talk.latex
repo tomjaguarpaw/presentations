@@ -15,7 +15,7 @@
 {\Large \maketitle}
 
 \begin{frame}[fragile]
-\frametitle{Tables of tuples}
+\frametitle{Tables}
 
 \large{
 \begin{minted}{haskell}
