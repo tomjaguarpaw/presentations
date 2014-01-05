@@ -38,10 +38,12 @@ FROM person_table
   (PersonId 4, "Clemens", CityId 3) ]
 \end{minted}
 
-\begin{itemize}
-\item There are no restrictions on what Haskell datatypes you can
-  store Wires in.  You can use Haskell records, lenses, etc.\ ...
-\end{itemize}
+% Mention this verbally instead
+%
+% \begin{itemize}
+% \item There are no restrictions on what Haskell datatypes you can
+%   store Wires in.  You can use Haskell records, lenses, etc.\ ...
+% \end{itemize}
 }
 \end{frame}
 
