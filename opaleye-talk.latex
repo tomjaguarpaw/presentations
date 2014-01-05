@@ -47,7 +47,7 @@ FROM person_table
 }
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}
 \frametitle{A query}
 
 \Large{
