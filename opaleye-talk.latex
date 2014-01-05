@@ -2,7 +2,7 @@
 
 \usepackage{minted}
 
-\title{Opaleye}
+\title{Opaleye\\Haskell Embedded Relational Query Language}
 
 \author{Tom Ellis}
 
