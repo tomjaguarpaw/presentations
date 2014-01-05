@@ -47,19 +47,22 @@ FROM person_table
 }
 \end{frame}
 
-\begin{frame}
-\frametitle{A query}
+%% Mention this verbally instead
+%%
+%% \begin{frame}
+%% \frametitle{A query}
 
-\Large{
-\begin{itemize}
-\item for each person
-\item look up their city
-\item look up that city's country
-\item return ``\emph{person name} lives in \emph{country name}''
-\end{itemize}
-}
+%% \Large{
+%% \begin{itemize}
+%% \item for each person
+%% \item look up their city
+%% \item look up that city's country
+%% \item return ``\emph{person name} lives in \emph{country name}''
+%% \end{itemize}
+%% }
+%%
+%% \end{frame}
 
-\end{frame}
 \begin{frame}[fragile]
 \frametitle{A query}
 
