@@ -78,7 +78,7 @@ countries = proc () -> do
   restrict <<< eq -< (cityCountryId, countryName)
 
   lives_in_string <- constant " lives in " -< ()
-  cat3 -< (personName, lives_in_string, country_code)
+  cat3 -< (personName, lives_in_string, countryCode)
 \end{minted}
 }
 \end{frame}
