@@ -1,0 +1,144 @@
+\documentclass[10pt]{beamer}
+
+\usepackage{minted}
+
+\title{Opaleye\\Haskell Embedded Relational Query Language}
+
+\author{Tom Ellis}
+
+\date{27th August 2014}
+
+\begin{document}
+
+% TODO: \large{ ... contents ...} should be {\large ... contents ... }
+
+{\Large \maketitle}
+
+\begin{frame}[fragile]
+
+\large{
+\begin{minted}{sql}
+SELECT personTable.height / personTable.age,
+       departmentTable.name
+FROM departmentTable, personTable
+WHERE departmentTable.head = personTable.id
+\end{minted}
+}
+
+\vspace{2em}
+\center{
+\includegraphics[scale=0.4]{Images/department.png}
+}
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\large{
+\begin{minted}{sql}
+SELECT addressTable.address
+FROM addressTable, personTable
+WHERE addressTable.head = personTable.id
+AND   personTable.height / personTable.age < 10 
+\end{minted}
+}
+
+\vspace{2em}
+\center{
+\includegraphics[scale=0.4]{Images/address.png}
+}
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\center{
+\includegraphics[scale=0.4]{Images/departmentSelection.png} \\
+\vspace{3em}
+\includegraphics[scale=0.4]{Images/addressSelection.png} \\
+\vspace{3em}
+\includegraphics[scale=0.4]{Images/growthRate.png}
+}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+
+\begin{minted}{haskell}
+growthRate :: Query (Wire PersonId) (Wire Double)
+growthRate = proc personId -> do
+    (id, height, age) <- personTable -< ()
+    restrict <<< eq -< (personId, id)
+    divide -< (height, age)
+\end{minted}
+
+\vspace{2em}
+\center{
+\includegraphics[scale=0.4]{Images/growthRate.png}
+}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+
+\begin{minted}{haskell}
+departmentQuery :: Query (Wire Double, Wire String)
+departmentQuery = proc () -> do
+    (head, name) <- addressTable -< ()
+    rate <- growthRate -< head
+    returnA -< (rate, name)
+\end{minted}
+
+\vspace{2em}
+\center{
+\includegraphics[scale=0.4]{Images/departmentFactor.png}\\
+\vspace{3em}
+\includegraphics[scale=0.4]{Images/departmentSelection.png}
+}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{minted}{haskell}
+addressQuery :: Query (Wire Address)
+addressQuery = proc () -> do
+    (personId, address) <- addressTable -< ()
+    rate <- growthRate -< personId
+    restrict <<< leqC 10 -< ratio
+    returnA -< address
+\end{minted}
+
+\vspace{2em}
+\center{
+\includegraphics[scale=0.4]{Images/addressFactor.png}\\
+\vspace{3em}
+\includegraphics[scale=0.4]{Images/addressSelection.png}
+}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Summary}
+
+\Large{
+Opaleye is an approach to relational queries which is
+
+\begin{itemize}
+\item type safe
+\item composable
+\end{itemize}
+
+I didn't have time to talk about
+
+\begin{itemize}
+\item aggregation is type safe and composable
+\item this is why we use Arrows rather than Monads
+\item both HaskellDB and Esqueleto get this wrong
+\end{itemize}
+}
+\end{frame}
+
+\end{document}
