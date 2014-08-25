@@ -10,6 +10,8 @@
 
 \begin{document}
 
+\newcommand{\image}[1]{\includegraphics[scale=0.4]{#1}}
+
 % TODO: \large{ ... contents ...} should be {\large ... contents ... }
 
 {\Large \maketitle}
@@ -27,7 +29,7 @@ WHERE  departmentTable.head = personTable.id
 
 \vspace{2em}
 \center{
-\includegraphics[scale=0.4]{Images/department.png}
+\image{Images/department.png}
 }
 
 \end{frame}
@@ -45,7 +47,7 @@ AND    personTable.height / personTable.age < 10
 
 \vspace{2em}
 \center{
-\includegraphics[scale=0.4]{Images/address.png}
+\image{Images/address.png}
 }
 
 \end{frame}
@@ -53,11 +55,11 @@ AND    personTable.height / personTable.age < 10
 \begin{frame}[fragile]
 
 \center{
-\includegraphics[scale=0.4]{Images/departmentSelection.png} \\
+\image{Images/departmentSelection.png} \\
 \vspace{3em}
-\includegraphics[scale=0.4]{Images/addressSelection.png} \\
+\image{Images/addressSelection.png} \\
 \vspace{3em}
-\includegraphics[scale=0.4]{Images/growthRate.png}
+\image{Images/growthRate.png}
 }
 
 \end{frame}
@@ -75,7 +77,7 @@ growthRate = proc personId -> do
 
 \vspace{2em}
 \center{
-\includegraphics[scale=0.4]{Images/growthRate.png}
+\image{Images/growthRate.png}
 }
 
 \end{frame}
@@ -93,9 +95,9 @@ departmentQuery = proc () -> do
 
 \vspace{2em}
 \center{
-\includegraphics[scale=0.4]{Images/departmentFactor.png}\\
+\image{Images/departmentFactor.png}\\
 \vspace{3em}
-\includegraphics[scale=0.4]{Images/departmentSelection.png}
+\image{Images/departmentSelection.png}
 }
 
 \end{frame}
@@ -112,9 +114,9 @@ addressQuery = proc () -> do
 
 \vspace{2em}
 \center{
-\includegraphics[scale=0.4]{Images/addressFactor.png}\\
+\image{Images/addressFactor.png}\\
 \vspace{3em}
-\includegraphics[scale=0.4]{Images/addressSelection.png}
+\image{Images/addressSelection.png}
 }
 
 \end{frame}
