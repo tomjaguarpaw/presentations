@@ -166,6 +166,7 @@ growthRate = proc personId -> do
 \end{frame}
 
 
+
 \begin{frame}[fragile]
 
 \begin{minted}{haskell}
