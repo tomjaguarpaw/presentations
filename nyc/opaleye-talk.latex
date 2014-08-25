@@ -64,6 +64,41 @@ Errors prevented at compile time
 \end{frame}
 
 
+
+\begin{frame}[fragile]
+\frametitle{Type safety}
+
+Useful information about behaviour (like IO)
+
+\begin{itemize}
+\item ``Expression'': Checking a sum is less than a limit is
+  ``pure''. The result does not depend on the data the database.
+
+\begin{minted}{haskell}
+checkLimit :: ExprArr (Wire Double, Wire Double)
+                      (Wire Bool)
+checkLimit = proc (x, y) -> do
+    total <- plus -< (x, y)
+    lt -< (total, limit)
+\end{minted}
+
+\item ``Query'': Returning all active users is ``impure''.  The result
+  depends on the data in the database.
+
+\begin{minted}{haskell}
+activeUsers :: QueryArr () (Wire User)
+activeUsers = proc () -> do
+    user <- userTable -< ()
+    restrict <<< isActive -< user
+    returnA -< user
+\end{minted}
+
+\end{itemize}
+
+\end{frame}
+
+
+
 \begin{frame}[fragile]
 
 \large{
