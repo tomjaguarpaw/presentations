@@ -206,6 +206,131 @@ addressQuery = proc () -> do
 \end{frame}
 
 
+
+\begin{frame}[fragile]
+
+\large{
+\begin{minted}{haskell}
+personTable :: Query (Wire PersonId, Wire String,
+                      Wire CityId)
+
+runQueryDefault personTable :: [(PersonId, String,
+                                 CityId)]
+\end{minted}
+
+\begin{minted}{sql}
+SELECT personId, personName, personCityId
+FROM personTable
+\end{minted}
+
+\begin{minted}{haskell}
+[ (PersonId 1, "Alice",   CityId 1),
+  (PersonId 2, "Bob",     CityId 1),
+  (PersonId 3, "Charlie", CityId 2),
+  (PersonId 4, "Dan",     CityId 3) ]
+\end{minted}
+
+% Mention this verbally instead
+%
+% \begin{itemize}
+% \item There are no restrictions on what Haskell datatypes you can
+%   store Wires in.  You can use Haskell records, lenses, etc.\ ...
+% \end{itemize}
+}
+\end{frame}
+
+%% Mention this verbally instead
+%%
+%% \begin{frame}
+%% \frametitle{A query}
+
+%% \Large{
+%% \begin{itemize}
+%% \item for each person
+%% \item look up their city
+%% \item look up that city's country
+%% \item return ``\emph{person name} lives in \emph{country name}''
+%% \end{itemize}
+%% }
+%%
+%% \end{frame}
+
+\begin{frame}[fragile]
+
+\begin{minted}{haskell}
+countries :: Query (Wire String)
+countries = proc () -> do
+  (_, personName, personCityId) <- personTable  -< ()
+  (cityId, _, cityCountryId)    <- cityTable    -< ()
+  (countryId, _, countryCode)   <- countryTable -< ()
+
+  restrict <<< eq -< (personCityId, cityId)
+  restrict <<< eq -< (cityCountryId, countryId)
+
+  livesInString <- constant " lives in " -< ()
+  cat3 -< (personName, livesInString, countryCode)
+\end{minted}
+
+\vspace{2em}
+
+\begin{minted}{sql}
+SELECT personName || ' lives in ' || countryName
+FROM   personTable, cityTable, countryTable
+WHERE  personTable.cityId = cityTable.id
+AND    cityTable.countryId = countryTable.id
+\end{minted}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+
+\begin{minted}{haskell}
+
+livesIn :: QueryArr (Wire String, Wire String) (Wire String)
+livesIn = proc (personName, countryName) -> do
+    livesInString <- constant " lives in " -< ()
+    cat3 -< (personName, livesInString, countryName)
+
+countryOfCity :: QueryArr (Wire CityId) (Wire CountryId)
+countryOfCity = proc cityId -> do
+    (cityId', _, cityCountryId)   <- countryTable -< ()
+    restrict <<< eq -< (cityId, cityId')
+    returnA -< cityCountryId
+
+countryNameOfCountry :: QueryArr (Wire CountryId) (Wire String)
+...
+
+countryNameOfCity :: QueryArr (Wire CityId) (Wire String)
+countryNameOfCity = countryNameOfCountry <<< countryOfCity
+\end{minted}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+
+\large{
+\begin{minted}{haskell}
+countries :: Query (Wire String)
+countries = proc () -> do
+  (_, personName, personCityId) <- personTable  -< ()
+  countryName <- countryNameOfCity -< personCityId
+  livesIn -< (personName, countryName)
+\end{minted}
+
+\begin{minted}{haskell}
+[ "Alice lives in UK",
+  "Bob lives in UK",
+  "Charlie lives in UK",
+  "Dan lives in NL" ]
+\end{minted}
+}
+
+\end{frame}
+
+
+
 \begin{frame}
 \frametitle{Summary}
 
