@@ -17,6 +17,36 @@
 {\Large \maketitle}
 
 \begin{frame}[fragile]
+\frametitle{Type safety}
+
+\large{
+Errors prevented at compile time
+
+\begin{itemize}
+\item Comparing an integer and a string
+
+\begin{minted}{haskell}
+    ...
+    eq -< (quantity, personName)
+    ...
+\end{minted}
+
+\item Comparing two incompatible IDs even though they are both
+  integers in the database
+
+\begin{minted}{haskell}
+    ...
+    eq -< (cityId, personId)
+    ...
+\end{minted}
+
+\end{itemize}
+}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
 
 \large{
 \begin{minted}{sql}
