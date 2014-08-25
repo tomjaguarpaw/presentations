@@ -20,8 +20,8 @@
 \begin{minted}{sql}
 SELECT personTable.height / personTable.age,
        departmentTable.name
-FROM departmentTable, personTable
-WHERE departmentTable.head = personTable.id
+FROM   departmentTable, personTable
+WHERE  departmentTable.head = personTable.id
 \end{minted}
 }
 
@@ -37,9 +37,9 @@ WHERE departmentTable.head = personTable.id
 \large{
 \begin{minted}{sql}
 SELECT addressTable.address
-FROM addressTable, personTable
-WHERE addressTable.head = personTable.id
-AND   personTable.height / personTable.age < 10 
+FROM   addressTable, personTable
+WHERE  addressTable.head = personTable.id
+AND    personTable.height / personTable.age < 10 
 \end{minted}
 }
 
