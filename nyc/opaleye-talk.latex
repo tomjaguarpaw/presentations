@@ -354,4 +354,30 @@ I didn't have time to talk about
 }
 \end{frame}
 
+
+
+\begin{frame}[fragile]
+\center{
+\image{Images/aggregation.png}
+}
+
+\vspace{2em}
+
+Can't aggregate.
+\begin{minted}{haskell}
+QueryArr (Wire a, Wire b, Wire c) (Wire Part, Wire Location,
+                                   Wire Int, Wire Double)
+\end{minted}
+
+Can aggregate.  Probably bad.
+\begin{minted}{haskell}
+Wire a -> Wire b -> Wire c
+            -> QueryMonad (Wire Part, Wire Location,
+                           Wire Int, Wire Double)
+\end{minted}
+
+\end{frame}
+
+
+
 \end{document}
