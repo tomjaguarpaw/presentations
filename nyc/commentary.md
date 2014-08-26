@@ -102,4 +102,39 @@
 
     * ExprArr does not look up data
 
+* Composability (2 examples)
 
+    * Need some way of understanding the underlying nature of
+      relational queries
+
+    * Wiring diagrams comes from David Spivak's work in the area
+
+    * Take a completely arbitrary made up example
+
+    * Want to calculate the average growth rate of all the heads of
+      department
+
+    * Want to calculate the average growth rate of everyone in my
+      address table, and return the addresses of those where the
+      growth rate is below some bound
+
+* Composability (comparison)
+
+    * What's the common part of these queries?
+
+    * Wiring diagrams make it very easy to see
+
+* Composability (implement growthRate)
+
+    * Don't worry about arrow notation
+
+    * Just a psuedo code and I'll talk you through it
+
+    * Arrow notation is essentially *exactly* for representing
+      diagrams like this
+
+* Composability (2 uses of growthRate)
+
+    * Now we can use and reuse our named subexpression
+
+    * Remember this is essentially the essence of abstraction
