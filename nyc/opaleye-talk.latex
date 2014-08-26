@@ -325,7 +325,7 @@ countries = proc () -> do
 [ "Alice lives in UK",
   "Bob lives in UK",
   "Charlie lives in UK",
-  "Dan lives in NL" ]
+  "Dan lives in US" ]
 \end{minted}
 }
 
