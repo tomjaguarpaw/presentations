@@ -138,3 +138,33 @@
     * Now we can use and reuse our named subexpression
 
     * Remember this is essentially the essence of abstraction
+
+* Person table
+
+    * give further details of Opaleye
+    * and another example of how this can work in practice
+    * refactoring
+
+    * "Wire" essentially means "Column"
+    * Query returning rows of tuples
+    * You can actually use any Haskell type here
+    * The SQL generated is similar to this
+
+* A bigger query
+
+    * let me tell you what it does
+
+    * can see many of the "relational algebra" operations at work here
+    * projection, product, restriction
+
+    * aside: opaleye also supports outer joins; union; difference etc.
+
+    * in fact I think Opaleye and the wiring diagram approach are a
+      better encoding of the relational algebra operations than
+      relational alg itself, exactly *because* of this emphasis on
+      type safety and composability
+
+* Summary
+
+    * All the benefits of type safety and composability that we love
+      with Haskell carry over to Opaleye
