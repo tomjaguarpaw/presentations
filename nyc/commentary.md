@@ -168,3 +168,15 @@
 
     * All the benefits of type safety and composability that we love
       with Haskell carry over to Opaleye
+
+* Aggregation
+
+    * aggregation is somewhat subtle
+
+    * for each wire have to choose aggregate or group by
+
+    * can't aggregate query arrows with inputs
+
+    * can't enforce last restriction with monads
+
+    * not sure of this, but sure arrows work
