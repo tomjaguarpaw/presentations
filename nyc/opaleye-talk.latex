@@ -24,9 +24,11 @@
 \begin{itemize}
 \item What: Haskell embedded domain specific language (EDSL)
   for generating SQL
-\item Why: Want to write relational queries with all the benefits of Haskell, especially type safety and composability
+\item Why: Want to write relational queries with all the benefits of
+  Haskell, especially type safety and composability
 \item Where: In production for over a year
-\item How: Some theory; reused some internal datastructures from HaskellDB
+\item How: Some theory; reused some internal datastructures from
+  HaskellDB
 \end{itemize}
 }
 
