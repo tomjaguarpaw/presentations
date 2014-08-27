@@ -365,6 +365,20 @@ I didn't have time to talk about
 
 \vspace{2em}
 
+\begin{minted}{haskell}
+partsTable :: Query (Wire Part, Wire Location,
+                     Wire Int, Wire Double)
+
+aggregate (p4 (groupBy, groupBy, sum, max)) partsTable
+    :: Query (Wire Part, Wire Location,
+              Wire Int, Wire Double)
+\end{minted}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+
 Can't aggregate.
 \begin{minted}{haskell}
 QueryArr (Wire a, Wire b, Wire c) (Wire Part, Wire Location,
