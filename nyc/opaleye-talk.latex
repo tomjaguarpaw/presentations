@@ -172,6 +172,8 @@ growthRate = proc personId -> do
 \begin{frame}[fragile]
 
 \begin{minted}{haskell}
+type Query = QueryArr ()
+
 departmentQuery :: Query (Wire Double, Wire String)
 departmentQuery = proc () -> do
     (head, name) <- addressTable -< ()
