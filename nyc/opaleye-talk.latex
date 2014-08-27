@@ -153,7 +153,7 @@ AND    personTable.height / personTable.age < 10
 \begin{frame}[fragile]
 
 \begin{minted}{haskell}
-growthRate :: Query (Wire PersonId) (Wire Double)
+growthRate :: QueryArr (Wire PersonId) (Wire Double)
 growthRate = proc personId -> do
     (id, height, age) <- personTable -< ()
     restrict <<< eq -< (personId, id)
