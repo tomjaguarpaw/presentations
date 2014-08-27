@@ -181,7 +181,7 @@ departmentQuery = proc () -> do
     returnA -< (rate, name)
 \end{minted}
 
-\vspace{2em}
+\vspace{1em}
 \center{
 \image{Images/departmentFactor.png}\\
 \vspace{3em}
