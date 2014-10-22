@@ -82,7 +82,8 @@
 
     * HaskellDB is a good library in many ways albeit with many flaws
 
-    * closed beta program -- get in touch if you want to participate
+    * Will be released to Hackage on 1st December and will be
+      accompanying "24 days of Opaleye"
 
 * Type safety (simple)
 
