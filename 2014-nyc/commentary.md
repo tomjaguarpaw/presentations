@@ -93,6 +93,8 @@
 
     * can't access non-existent columns
 
+    * nullability is explicit
+
 * Type safety (further info)
 
     * Haskell distinguishes pure computations and those in IO
