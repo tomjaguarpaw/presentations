@@ -118,7 +118,7 @@ WHERE  departmentTable.head = personTable.id
 
 \vspace{2em}
 \center{
-\image{Images/department.png}
+\image{Images/department.pdf}
 }
 
 \end{frame}
@@ -136,7 +136,7 @@ AND    personTable.height / personTable.age < 10
 
 \vspace{2em}
 \center{
-\image{Images/address.png}
+\image{Images/address.pdf}
 }
 
 \end{frame}
@@ -144,11 +144,11 @@ AND    personTable.height / personTable.age < 10
 \begin{frame}[fragile]
 
 \center{
-\image{Images/departmentSelection.png} \\
+\image{Images/departmentSelection.pdf} \\
 \vspace{3em}
-\image{Images/addressSelection.png} \\
+\image{Images/addressSelection.pdf} \\
 \vspace{3em}
-\image{Images/growthRate.png}
+\image{Images/growthRate.pdf}
 }
 
 \end{frame}
@@ -166,7 +166,7 @@ growthRate = proc personId -> do
 
 \vspace{2em}
 \center{
-\image{Images/growthRate.png}
+\image{Images/growthRate.pdf}
 }
 
 \end{frame}
@@ -187,9 +187,9 @@ departmentQuery = proc () -> do
 
 \vspace{1em}
 \center{
-\image{Images/departmentFactor.png}\\
+\image{Images/departmentFactor.pdf}\\
 \vspace{3em}
-\image{Images/departmentSelection.png}
+\image{Images/departmentSelection.pdf}
 }
 
 \end{frame}
@@ -206,9 +206,9 @@ addressQuery = proc () -> do
 
 \vspace{2em}
 \center{
-\image{Images/addressFactor.png}\\
+\image{Images/addressFactor.pdf}\\
 \vspace{3em}
-\image{Images/addressSelection.png}
+\image{Images/addressSelection.pdf}
 }
 
 \end{frame}
@@ -364,7 +364,7 @@ I didn't have time to talk about
 
 \begin{frame}[fragile]
 \center{
-\image{Images/aggregation.png}
+\image{Images/aggregation.pdf}
 }
 
 \vspace{2em}
