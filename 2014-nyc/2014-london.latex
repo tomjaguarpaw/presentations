@@ -78,14 +78,14 @@ Useful information about behaviour (like \texttt{IO})
 
 \begin{itemize}
 \item ``Expression'': Checking a sum is less than a limit is
-  ``pure''. The result does not depend on the data the database.
+  ``pure''. Result does not depend on the data the database.
 
 \begin{minted}{haskell}
 checkLimit :: Col Double -> Col Double -> Col Bool
 checkLimit x y = (x + y) .< 10
 \end{minted}
 
-\item ``Query'': Returning all active users is ``impure''.  The result
+\item ``Query'': Returning all active users is ``impure''.  Result
   depends on the data in the database.
 
 \begin{minted}{haskell}
