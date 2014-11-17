@@ -45,23 +45,23 @@ Type errors prevented at compile time
 \begin{itemize}
 \item
 \begin{minted}{haskell}
-    quantity :: Wire Int
-    personName :: Wire String
-    eq -< (quantity, personName)
+    quantity :: Col Int
+    personName :: Col String
+    quantity .== personName
 \end{minted}
 
 \item
 \begin{minted}{haskell}
-    cityId :: Wire CityId
-    personId ::  Wire PersonId
-    eq -< (cityId, personId)
+    cityId :: Col CityId
+    personId :: Col PersonId
+    cityId .== personId
 \end{minted}
 
 \item
 \begin{minted}{haskell}
-    nullableName :: Wire (Nullable String)
-    name :: Wire String
-    eq -< (nullableName, name)
+    nullableName :: Col (Nullable String)
+    name :: Col String
+    nullableName .== name
 \end{minted}
 
 \end{itemize}
@@ -81,18 +81,15 @@ Useful information about behaviour (like IO)
   ``pure''. The result does not depend on the data the database.
 
 \begin{minted}{haskell}
-checkLimit :: ExprArr (Wire Double, Wire Double)
-                      (Wire Bool)
-checkLimit = proc (x, y) -> do
-    total <- plus -< (x, y)
-    lt -< (total, limit)
+checkLimit :: Col Double -> Col Double -> Col Bool
+checkLimit x y = (x + y) .< 10
 \end{minted}
 
 \item ``Query'': Returning all active users is ``impure''.  The result
   depends on the data in the database.
 
 \begin{minted}{haskell}
-activeUsers :: QueryArr () (Wire User)
+activeUsers :: QueryArr () (Col User)
 activeUsers = proc () -> do
     user <- userTable -< ()
     restrict <<< isActive -< user
@@ -157,11 +154,11 @@ AND    personTable.height / personTable.age < 10
 \begin{frame}[fragile]
 
 \begin{minted}{haskell}
-growthRate :: QueryArr (Wire PersonId) (Wire Double)
+growthRate :: QueryArr (Col PersonId) (Col Double)
 growthRate = proc personId -> do
     (id, height, age) <- personTable -< ()
-    restrict <<< eq -< (personId, id)
-    divide -< (height, age)
+    restrict <<< (personId .== id)
+    returnA -< height / age
 \end{minted}
 
 \vspace{2em}
@@ -178,7 +175,7 @@ growthRate = proc personId -> do
 \begin{minted}{haskell}
 type Query = QueryArr ()
 
-departmentQuery :: Query (Wire Double, Wire String)
+departmentQuery :: Query (Col Double, Col String)
 departmentQuery = proc () -> do
     (head, name) <- addressTable -< ()
     rate <- growthRate -< head
@@ -196,11 +193,11 @@ departmentQuery = proc () -> do
 
 \begin{frame}[fragile]
 \begin{minted}{haskell}
-addressQuery :: Query (Wire Address)
+addressQuery :: Query (Col Address)
 addressQuery = proc () -> do
     (personId, address) <- addressTable -< ()
     rate <- growthRate -< personId
-    restrict <<< leqC 10 -< ratio
+    restrict <<< (rate .<= 10)
     returnA -< address
 \end{minted}
 
@@ -220,7 +217,7 @@ addressQuery = proc () -> do
 \large{
 \begin{minted}{haskell}
 personTable
-  :: Query (Wire PersonId, Wire String, Wire CityId)
+  :: Query (Col PersonId, Col String, Col CityId)
 
 runQueryDefault personTable
   :: IO [(PersonId, String, CityId)]
@@ -242,7 +239,7 @@ FROM personTable
 %
 % \begin{itemize}
 % \item There are no restrictions on what Haskell datatypes you can
-%   store Wires in.  You can use Haskell records, lenses, etc.\ ...
+%   store Cols in.  You can use Haskell records, lenses, etc.\ ...
 % \end{itemize}
 }
 \end{frame}
@@ -266,17 +263,16 @@ FROM personTable
 \begin{frame}[fragile]
 
 \begin{minted}{haskell}
-countries :: Query (Wire String)
+countries :: Query (Col String)
 countries = proc () -> do
-  (_, personName, personCityId) <- personTable  -< ()
-  (cityId, _, cityCountryId)    <- cityTable    -< ()
-  (countryId, _, countryCode)   <- countryTable -< ()
+  (_, personName, personCityId)  <- personTable  -< ()
+  (cityId, _,     cityCountryId) <- cityTable    -< ()
+  (countryId, _,  countryCode)   <- countryTable -< ()
 
-  restrict <<< eq -< (personCityId, cityId)
-  restrict <<< eq -< (cityCountryId, countryId)
+  restrict <<< (personCityId .== cityId)
+  restrict <<< (cityCountryId .== countryId)
 
-  livesInString <- constant " lives in " -< ()
-  cat3 -< (personName, livesInString, countryCode)
+  returnA -< personName .++ " lives in " .++ countryCode
 \end{minted}
 
 \vspace{2em}
@@ -295,21 +291,21 @@ AND    cityTable.countryId = countryTable.id
 
 \begin{minted}{haskell}
 
-livesIn :: QueryArr (Wire String, Wire String) (Wire String)
-livesIn = proc (personName, countryName) -> do
-    livesInString <- constant " lives in " -< ()
-    cat3 -< (personName, livesInString, countryName)
+livesIn :: Col String -> Col String -> Col String
+livesIn personName countryName = personName
+                                 .++ " lives in "
+                                 .++ countryName
 
-countryOfCity :: QueryArr (Wire CityId) (Wire CountryId)
+countryOfCity :: QueryArr (Col CityId) (Col CountryId)
 countryOfCity = proc cityId -> do
-    (cityId', _, cityCountryId)   <- countryTable -< ()
-    restrict <<< eq -< (cityId, cityId')
+    (cityId', _, cityCountryId) <- countryTable -< ()
+    restrict <<< (cityId .== cityId')
     returnA -< cityCountryId
 
-countryNameOfCountry :: QueryArr (Wire CountryId) (Wire String)
+countryNameOfCountry :: QueryArr (Col CountryId) (Col String)
 ...
 
-countryNameOfCity :: QueryArr (Wire CityId) (Wire String)
+countryNameOfCity :: QueryArr (Col CityId) (Col String)
 countryNameOfCity = countryNameOfCountry <<< countryOfCity
 \end{minted}
 
@@ -320,11 +316,11 @@ countryNameOfCity = countryNameOfCountry <<< countryOfCity
 
 \large{
 \begin{minted}{haskell}
-countries :: Query (Wire String)
+countries :: Query (Col String)
 countries = proc () -> do
   (_, personName, personCityId) <- personTable  -< ()
   countryName <- countryNameOfCity -< personCityId
-  livesIn -< (personName, countryName)
+  returnA -< livesIn personName countryName
 \end{minted}
 
 \begin{minted}{haskell}
@@ -370,12 +366,12 @@ I didn't have time to talk about
 \vspace{2em}
 
 \begin{minted}{haskell}
-partsTable :: Query (Wire Part, Wire Location,
-                     Wire Int, Wire Double)
+partsTable :: QueryArr () (Col Part, Col Location,
+                           Col Int, Col Double)
 
+aggregade :: QueryArr () (Col Part, Col Location,
+                          Col Int, Col Double)
 aggregate (p4 (groupBy, groupBy, sum, max)) partsTable
-    :: Query (Wire Part, Wire Location,
-              Wire Int, Wire Double)
 \end{minted}
 
 \end{frame}
@@ -385,15 +381,15 @@ aggregate (p4 (groupBy, groupBy, sum, max)) partsTable
 
 Can't aggregate.
 \begin{minted}{haskell}
-QueryArr (Wire a, Wire b, Wire c) (Wire Part, Wire Location,
-                                   Wire Int, Wire Double)
+QueryArr (Col a, Col b, Col c) (Col Part, Col Location,
+                                Col Int, Col Double)
 \end{minted}
 
 Can aggregate.  Probably bad.
 \begin{minted}{haskell}
-Wire a -> Wire b -> Wire c
-            -> QueryMonad (Wire Part, Wire Location,
-                           Wire Int, Wire Double)
+Col a -> Col b -> Col c
+            -> QueryMonad (Col Part, Col Location,
+                           Col Int, Col Double)
 \end{minted}
 
 \end{frame}

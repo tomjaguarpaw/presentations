@@ -89,6 +89,8 @@
 
     * obvious example of trying to compare columns of different types
 
+    * "Col" is a shortened version of "Column"
+
     * provide newtype wrapping like Haskell for hiding implementation
 
     * can't access non-existent columns
@@ -148,7 +150,6 @@
     * and another example of how this can work in practice
     * refactoring
 
-    * "Wire" essentially means "Column"
     * Query returning rows of tuples
     * You can actually use any Haskell type here
     * The SQL generated is similar to this
