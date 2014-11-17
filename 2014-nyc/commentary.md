@@ -184,3 +184,14 @@
     * can't enforce last restriction with monads
 
     * not sure of this, but sure arrows work
+
+    * Same holds for other SQL features Opaleye supports
+
+        * DISTINCT
+        * LEFT, RIGHT, OUTER JOIN
+        * ORDER BY
+        * UNION, EXCEPT, INTERSECT
+        * VALUES
+
+    * Also supports UPDATE, INSERT, DELETE but didn't have time to
+      talk about that
