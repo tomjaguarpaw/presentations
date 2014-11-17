@@ -369,9 +369,11 @@ I didn't have time to talk about
 partsTable :: QueryArr () (Col Part, Col Location,
                            Col Int, Col Double)
 
-aggregade :: QueryArr () (Col Part, Col Location,
-                          Col Int, Col Double)
-aggregate (p4 (groupBy, groupBy, sum, max)) partsTable
+aggregatedPartsTable :: QueryArr () (Col Part, Col Location,
+                                     Col Int, Col Double)
+aggregatedPartsTable = aggregate
+                           (p4 (groupBy, groupBy, sum, max))
+                           partsTable
 \end{minted}
 
 \end{frame}
