@@ -74,7 +74,7 @@ Type errors prevented at compile time
 \begin{frame}[fragile]
 \frametitle{Type safety}
 
-Useful information about behaviour (like IO)
+Useful information about behaviour (like \texttt{IO})
 
 \begin{itemize}
 \item ``Expression'': Checking a sum is less than a limit is
