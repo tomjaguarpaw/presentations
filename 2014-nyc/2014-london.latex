@@ -39,7 +39,7 @@
 \begin{frame}[fragile]
 \frametitle{Type safety}
 
-\Large{
+\large{
 Type errors prevented at compile time
 
 \begin{itemize}
