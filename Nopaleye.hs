@@ -12,6 +12,10 @@ import qualified Data.Map as Map
 import qualified Data.Monoid as M
 import           Data.Monoid ((<>))
 import qualified Data.List as L
+import           Schema
+
+printRows :: Show a => [a] -> IO ()
+printRows = mapM_ print
 
 type Query a = QueryArr () a
 type QueryArr a b = Arr.Kleisli [] a b
@@ -147,3 +151,11 @@ qcount = (runQuery
           . orderBy (desc fst <> asc snd)
           . aggregate (PP.p2 (countA, groupBy)))
          q
+
+totalOutput :: Query (String, Int)
+totalOutput =
+  orderBy (desc snd) $
+  aggregate (PP.p2 (groupBy, sumA)) $
+    proc () -> do
+      (employee, _, _, lines) <- listQuery output -< ()
+      Arr.returnA -< (employee, lines)
