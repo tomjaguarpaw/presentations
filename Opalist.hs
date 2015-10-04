@@ -16,9 +16,6 @@ import qualified Foldl
 type Query a = QueryArr () a
 type QueryArr a b = Arr.Kleisli [] a b
 
-restrict :: QueryArr Bool ()
-restrict = Arr.Kleisli (\b -> if b then [()] else [])
-
 -- { Aggregation
 
 data Aggregator a b =
