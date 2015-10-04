@@ -3,7 +3,6 @@
 
 module Nopaleye where
 
-import qualified Control.Foldl as Foldl
 import qualified Data.Profunctor as P
 import qualified Data.Profunctor.Product as PP
 import qualified Control.Applicative as A
@@ -13,6 +12,7 @@ import qualified Data.Monoid as M
 import           Data.Monoid ((<>))
 import qualified Data.List as L
 import           Schema
+import qualified Foldl
 
 printRows :: Show a => [a] -> IO ()
 printRows = mapM_ print
@@ -56,7 +56,7 @@ aggregateList :: Aggregator a b -> [a] -> [b]
 aggregateList (Aggregator group fold finish) =
   map finish
   . Map.toList
-  . fmap (Foldl.fold fold)
+  . fmap (Foldl.runFold fold)
   . Map.fromListWith (++)
   . map (group Arr.&&& (:[]))
 
@@ -66,20 +66,24 @@ groupBy = Aggregator id (A.pure ()) fst
 fromFoldl :: Foldl.Fold a b -> Aggregator a b
 fromFoldl foldl = Aggregator (A.pure ()) foldl snd
 
+-- Adapting Folds to Aggregators
+
 sumA :: Num a => Aggregator a a
-sumA = fromFoldl Foldl.sum
+sumA = fromFoldl Foldl.sumF
 
 maxA :: Ord a => Aggregator a (Maybe a)
-maxA = fromFoldl Foldl.maximum
+maxA = fromFoldl Foldl.maximumF
 
 countA :: Aggregator a Int
-countA = fromFoldl Foldl.length
+countA = fromFoldl Foldl.lengthF
 
 test =
   (runQuery
    . orderBy (desc fst <> asc snd)
    . aggregate (PP.p2 (countA, groupBy)))
   (Arr.arr (\(x, y, _) -> (x, y)) Arr.<<< speakers)
+
+-- Ording
 
 data Order a = Order (a -> a -> Ordering)
 
@@ -96,8 +100,7 @@ instance M.Monoid (Order a) where
   mempty = Order (const (const EQ))
   Order f `mappend` Order g = Order (f `M.mappend` g)
 
-keepWhen :: (a -> Bool) -> QueryArr a a
-keepWhen p = Arr.Kleisli (\a -> if p a then [a] else [])
+--
 
 listQuery :: [a] -> Query a
 listQuery = Arr.Kleisli . const
