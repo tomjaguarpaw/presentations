@@ -11,7 +11,6 @@ import qualified Data.Map as Map
 import qualified Data.Monoid as M
 import           Data.Monoid ((<>))
 import qualified Data.List as L
-import           Schema
 import qualified Foldl
 
 printRows :: Show a => [a] -> IO ()
@@ -45,12 +44,7 @@ instance PP.ProductProfunctor Aggregator where
   (***!) = PP.defaultProfunctorProduct
 
 aggregate :: Aggregator a b -> Query a -> Query b
-aggregate agg =
-  Arr.Kleisli
-  . const
-  . aggregateList agg
-  . ($ ())
-  . Arr.runKleisli
+aggregate agg = listQuery . aggregateList agg . runQuery
 
 aggregateList :: Aggregator a b -> [a] -> [b]
 aggregateList (Aggregator group fold finish) =
@@ -77,13 +71,7 @@ maxA = fromFoldl Foldl.maximumF
 countA :: Aggregator a Int
 countA = fromFoldl Foldl.lengthF
 
-test =
-  (runQuery
-   . orderBy (desc fst <> asc snd)
-   . aggregate (PP.p2 (countA, groupBy)))
-  (Arr.arr (\(x, y, _) -> (x, y)) Arr.<<< speakers)
-
--- Ording
+-- Ordering
 
 data Order a = Order (a -> a -> Ordering)
 
@@ -108,61 +96,3 @@ listQuery = Arr.Kleisli . const
 runQuery :: Query a -> [a]
 runQuery = ($ ()) . Arr.runKleisli
 
-speakers = listQuery [ ("Andres", "DE", "Thursday")
-                     , ("Simon PJ", "UK", "Thursday")
-                     , ("Alfredo", "IT", "Thursday")
-                     , ("Jasper", "BE", "Thursday")
-                     , ("Vladimir", "RU", "Thursday")
-                     , ("Francesco", "IT", "Thursday")
-                     , ("Matthew", "UK", "Thursday")
-                     , ("Ivan", "ES", "Thursday")
-                     , ("Johan", "SE", "Thursday")
-                     , ("Martijn", "NL", "Thursday")
-                     , ("Lennart", "SE", "Thursday")
-                     , ("Phillip", "DE", "Thursday")
-                     , ("Bodil", "NO", "Thursday")
-                     , ("San", "BE", "Thursday")
-                     , ("Simon M", "UK", "Friday")
-                     , ("Neil", "UK", "Friday")
-                     , ("Alp", "FR", "Friday")
-                     , ("Mietek", "PL", "Friday")
-                     , ("Lars", "DE", "Friday")
-                     , ("Miles", "UK", "Friday")
-                     , ("Gershom", "US", "Friday")
-                     , ("Tom", "UK", "Friday")
-                     , ("Nicolas", "UK", "Friday")
-                     , ("Luite", "NL", "Friday") ]
-
-directions = listQuery [ ("DE", "North")
-                       , ("UK", "North")
-                       , ("IT", "South")
-                       , ("BE", "North")
-                       , ("ES", "South")
-                       , ("NL", "North")
-                       , ("RU", "East")
-                       , ("SE", "North")
-                       , ("US", "West")
-                       , ("PL", "East")
-                       , ("NO", "North")
-                       , ("FR", "North") ]
-
-q :: Query (String, String)
-q = proc () -> do
-  (speaker, country, _) <- speakers  -< ()
-  (country', direction) <- directions -< ()
-  restrict -< country == country'
-  Arr.returnA -< (speaker, direction)
-  
-qcount :: [(Int, String)]
-qcount = (runQuery
-          . orderBy (desc fst <> asc snd)
-          . aggregate (PP.p2 (countA, groupBy)))
-         q
-
-totalOutput :: Query (String, Int)
-totalOutput =
-  orderBy (desc snd) $
-  aggregate (PP.p2 (groupBy, sumA)) $
-    proc () -> do
-      (employee, _, _, lines) <- listQuery output -< ()
-      Arr.returnA -< (employee, lines)

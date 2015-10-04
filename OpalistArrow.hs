@@ -8,14 +8,10 @@ import OpalistMonad (guard)
 import qualified Data.Profunctor.Product as PP
 import Control.Arrow (returnA, Kleisli(Kleisli))
 
-type Query a = QueryArr () a
-type QueryArr a b = Kleisli [] a b
-
 -- 'Kleisli [] a b' is just 'a -> [b]'
---
--- 'Query a' is just+ '[a]'
---
--- + isomorphic to
+
+type QueryArr a b = Kleisli [] a b
+type Query a = QueryArr () a
 
 printRows :: Show a => Query a -> IO ()
 printRows = mapM_ print . runQuery
