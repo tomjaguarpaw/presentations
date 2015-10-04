@@ -13,17 +13,18 @@ import           Data.Monoid ((<>))
 import qualified Data.List as L
 import qualified Foldl
 
-printRows :: Show a => [a] -> IO ()
-printRows = mapM_ print
-
 type Query a = QueryArr () a
 type QueryArr a b = Arr.Kleisli [] a b
 
 restrict :: QueryArr Bool ()
 restrict = Arr.Kleisli (\b -> if b then [()] else [])
 
+-- { Aggregation
+
 data Aggregator a b =
   forall r r'. Ord r => Aggregator (a -> r) (Foldl.Fold a r') ((r, r') -> b)
+
+-- The instances are almost entirely boilerplate
 
 instance P.Profunctor Aggregator where
   dimap f g (Aggregator group fold finish) =
@@ -57,10 +58,12 @@ aggregateList (Aggregator group fold finish) =
 groupBy :: Ord a => Aggregator a a
 groupBy = Aggregator id (A.pure ()) fst
 
+-- }
+
+-- { Adapting Folds to Aggregators
+
 fromFoldl :: Foldl.Fold a b -> Aggregator a b
 fromFoldl foldl = Aggregator (A.pure ()) foldl snd
-
--- Adapting Folds to Aggregators
 
 sumA :: Num a => Aggregator a a
 sumA = fromFoldl Foldl.sumF
@@ -71,7 +74,9 @@ maxA = fromFoldl Foldl.maximumF
 countA :: Aggregator a Int
 countA = fromFoldl Foldl.lengthF
 
--- Ordering
+-- }
+
+-- { Ordering
 
 data Order a = Order (a -> a -> Ordering)
 
@@ -88,7 +93,9 @@ instance M.Monoid (Order a) where
   mempty = Order (const (const EQ))
   Order f `mappend` Order g = Order (f `M.mappend` g)
 
---
+-- }
+
+-- { Isomorphism between [] and Query
 
 listQuery :: [a] -> Query a
 listQuery = Arr.Kleisli . const
@@ -96,3 +103,7 @@ listQuery = Arr.Kleisli . const
 runQuery :: Query a -> [a]
 runQuery = ($ ()) . Arr.runKleisli
 
+-- }
+
+printRows :: Show a => [a] -> IO ()
+printRows = mapM_ print
