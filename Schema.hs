@@ -1,12 +1,12 @@
 module Schema where
 
-employee :: [(String, String)]
-employee = [ ("Tom",   "Back end")
-           , ("Neil",  "Back end")
-           , ("Alice", "Front end")
-           , ("John",  "Front end")
-           , ("Anne",  "Testing")
-           , ("Ryan",  "Testing") ]
+employees :: [(String, String, String)]
+employees = [ ("Tom",   "Back end",  "UK")
+            , ("Neil",  "Back end",  "UK")
+            , ("Alice", "Front end", "FR")
+            , ("John",  "Front end", "UK")
+            , ("Anne",  "Testing",   "FR")
+            , ("Ryan",  "Testing",   "FR") ]
 
 output :: [(String, String, String, Int)]
 output = [ ("Tom",   "Monday",  "UK", 530)
@@ -22,7 +22,7 @@ output = [ ("Tom",   "Monday",  "UK", 530)
          , ("Ryan",  "Monday",  "UK", 360)
          , ("Ryan",  "Tuesday", "UK", 380) ]
 
-manager :: [(String, String)]
-manager = [ ("Back end",  "Tom")
-          , ("Front end", "Alice")
-          , ("Testing",   "Anne") ]
+managers :: [(String, String)]
+managers = [ ("Back end",  "Tom")
+           , ("Front end", "Alice")
+           , ("Testing",   "Anne") ]

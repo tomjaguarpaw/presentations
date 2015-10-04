@@ -45,16 +45,20 @@ instance PP.ProductProfunctor Aggregator where
   (***!) = PP.defaultProfunctorProduct
 
 aggregate :: Aggregator a b -> Query a -> Query b
-aggregate (Aggregator group fold finish) =
+aggregate agg =
   Arr.Kleisli
   . const
-  . map finish
+  . aggregateList agg
+  . ($ ())
+  . Arr.runKleisli
+
+aggregateList :: Aggregator a b -> [a] -> [b]
+aggregateList (Aggregator group fold finish) =
+  map finish
   . Map.toList
   . fmap (Foldl.fold fold)
   . Map.fromListWith (++)
   . map (group Arr.&&& (:[]))
-  . ($ ())
-  . Arr.runKleisli
 
 groupBy :: Ord a => Aggregator a a
 groupBy = Aggregator id (A.pure ()) fst
