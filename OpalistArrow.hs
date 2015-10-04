@@ -72,3 +72,28 @@ linesByEmployeeCountry = proc () -> do
 totalLinesByEmployeeCountry :: Query (String, String, Int)
 totalLinesByEmployeeCountry =
   aggregate (PP.p3 (groupBy, groupBy, sumA)) linesByEmployeeCountry
+
+
+
+-- # Bad aggregation can't happen with arrows
+
+linesByEmployeeIn :: QueryArr String (String, Int)
+linesByEmployeeIn = proc country -> do
+  (employee, _, country', lines) <- output -< ()
+  restrict -< country' == country
+  returnA -< (employee, lines)
+
+{- 
+
+  We can't write 'totalLinesByEmployeeIn' because it's structure is
+syntactically ruled out by arrow notation, given that aggregation
+works on 'QueryArr () r' rather than 'QueryArr a r'.
+
+totalLinesByEmployeeIn :: QueryArr String (String, Int)
+totalLinesByEmployeeIn = proc country -> do
+  aggregate (PP.p2 (groupBy, sumA)) linesByEmployeeIn -< country
+
+ Couldn't match type `String' with `()'
+    Expected type: QueryArr () (String, Int)
+      Actual type: QueryArr String (String, Int)
+-}

@@ -84,3 +84,41 @@ linesByEmployeeCountry = do
 totalLinesByEmployeeCountry :: [(String, String, Int)]
 totalLinesByEmployeeCountry =
   aggregateList (PP.p3 (groupBy, groupBy, sumA)) linesByEmployeeCountry
+
+
+-- # Aggregation that doesn't transfer to SQL
+
+linesByEmployeeIn :: String -> [(String, Int)]
+linesByEmployeeIn country = do
+  (employee, _, country', lines) <- output
+  guard (country' == country)
+  return (employee, lines)
+
+totalLinesByEmployeeIn :: String -> [(String, Int)]
+totalLinesByEmployeeIn country =
+  aggregateList (PP.p2 (groupBy, sumA)) (linesByEmployeeIn country)
+
+linesByEmployeeAtHome :: [(String, Int)]
+linesByEmployeeAtHome = do
+  (employee, _, country) <- employees
+  (employee', lines) <- totalLinesByEmployeeIn country
+
+  guard (employee == employee')
+
+  return (employee, lines)
+
+{-
+
+  linesByEmployeeAtHome would generate the following SQL.
+
+  SELECT employee, country FROM employees
+         output_employee, lines FROM (
+           SELECT output_employee, SUM(lines) FROM output
+           WHERE country == output_county
+           GROUP BY output_employee) as T1
+  WHERE employee == output_employee
+
+  This SQL is invalid because 'country' is not in scope in the line
+  'WHERE country == output_county'
+
+-}
