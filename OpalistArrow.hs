@@ -97,3 +97,29 @@ totalLinesByEmployeeIn = proc country -> do
     Expected type: QueryArr () (String, Int)
       Actual type: QueryArr String (String, Int)
 -}
+
+
+
+{- # Exercises
+
+  Easy ones to start with:
+
+  1. Project employee and department from the employees table
+  2. Restrict the output table to the work which was done on
+     Tuesday.
+  3. Find all days that each employee was working at their home
+     location.
+
+  And now some harder ones:
+
+  3. Calculate the total lines of code output by each employee
+     (across all days and locations).
+  4. Calculate the total lines of code output on each day
+     (across all employees and locations).
+  5. Find the maximum number of lines written at each location
+     (using the maxA aggregator).
+  6. Find the total lines of code output by each employee
+     whilst they were working at their home location.
+-}
+
+
