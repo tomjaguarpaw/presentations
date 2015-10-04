@@ -86,7 +86,7 @@ orderBy (Order compare') = listQuery .L.sortBy compare' . runQuery
 
 instance M.Monoid (Order a) where
   mempty = Order (const (const EQ))
-  Order f `mappend` Order g = Order (\x y -> f x y `M.mappend` g x y)
+  Order f `mappend` Order g = Order (f `M.mappend` g)
 
 keepWhen :: (a -> Bool) -> QueryArr a a
 keepWhen p = Arr.Kleisli (\a -> if p a then [a] else [])
