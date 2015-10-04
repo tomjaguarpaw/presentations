@@ -3,7 +3,7 @@
 module OpalistArrow where
 
 import SchemaArrow
-import Nopaleye (aggregate, groupBy, sumA, runQuery)
+import Opalist (aggregate, groupBy, sumA, runQuery)
 import OpalistMonad (guard)
 import qualified Data.Profunctor.Product as PP
 import Control.Arrow (returnA, Kleisli(Kleisli))

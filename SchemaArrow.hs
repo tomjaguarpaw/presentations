@@ -1,6 +1,6 @@
 module SchemaArrow where
 
-import Nopaleye
+import Opalist (listQuery, Query)
 import qualified Schema
 
 employees :: Query (String, String, String)

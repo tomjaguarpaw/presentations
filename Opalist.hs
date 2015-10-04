@@ -1,7 +1,7 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE Arrows #-}
 
-module Nopaleye where
+module Opalist where
 
 import qualified Data.Profunctor as P
 import qualified Data.Profunctor.Product as PP

@@ -1,7 +1,7 @@
 module OpalistMonad where
 
 import Schema
-import Nopaleye (aggregateList, groupBy, sumA, printRows)
+import Opalist (aggregateList, groupBy, sumA, printRows)
 import qualified Data.Profunctor.Product as PP
 
 -- # Projection
