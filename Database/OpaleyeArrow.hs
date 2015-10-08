@@ -26,7 +26,7 @@ ukEmployees :: Query EmployeeCol
 ukEmployees = proc () -> do
   employee <- queryTable employees -< ()  
 
-  restrict -< eCountry employee .== constant "UK"
+  restrict -< eCountry employee .== pgString "UK"
 
   returnA -< employee
 
