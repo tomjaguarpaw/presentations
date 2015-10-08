@@ -1,6 +1,6 @@
 {-# LANGUAGE Arrows #-}
 
-module OpalistArrow where
+module OpaleyeArrow where
 
 import           Schema
 import           Opaleye
