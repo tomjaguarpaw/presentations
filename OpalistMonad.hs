@@ -78,8 +78,8 @@ managerOf = do
 
 linesByEmployeeCountry :: [(String, String, Int)]
 linesByEmployeeCountry = do
-  (employee, country, _, lines) <- output
-  return (employee, country, lines)
+  outputRow <- output
+  return (oName outputRow, oCountry outputRow, oOutput outputRow)
 
 totalLinesByEmployeeCountry :: [(String, String, Int)]
 totalLinesByEmployeeCountry =
@@ -90,9 +90,9 @@ totalLinesByEmployeeCountry =
 
 linesByEmployeeIn :: String -> [(String, Int)]
 linesByEmployeeIn country = do
-  (employee, _, country', lines) <- output
-  guard (country' == country)
-  return (employee, lines)
+  outputRow <- output
+  guard (oCountry outputRow == country)
+  return (oName outputRow, oOutput outputRow)
 
 totalLinesByEmployeeIn :: String -> [(String, Int)]
 totalLinesByEmployeeIn country =

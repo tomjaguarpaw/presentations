@@ -59,8 +59,8 @@ managerOf = proc () -> do
 
 linesByEmployeeCountry :: Query (String, String, Int)
 linesByEmployeeCountry = proc () -> do
-  (employee, _, country, lines) <- output -< ()
-  returnA -< (employee, country, lines)
+  outputRow <- output -< ()
+  returnA -< (oName outputRow, oCountry outputRow, oOutput outputRow)
 
 totalLinesByEmployeeCountry :: Query (String, String, Int)
 totalLinesByEmployeeCountry =
@@ -72,9 +72,9 @@ totalLinesByEmployeeCountry =
 
 linesByEmployeeIn :: QueryArr String (String, Int)
 linesByEmployeeIn = proc country -> do
-  (employee, _, country', lines) <- output -< ()
-  restrict -< country' == country
-  returnA -< (employee, lines)
+  outputRow <- output -< ()
+  restrict -< oCountry outputRow == country
+  returnA -< (oName outputRow, oOutput outputRow)
 
 {- 
 
