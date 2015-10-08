@@ -2,14 +2,13 @@
 
 module OpalistArrow where
 
-import Schema
-import Opaleye
+import           Schema
+import           Opaleye
 import qualified Data.Profunctor.Product as PP
-import Control.Arrow (returnA)
-import Data.Profunctor.Product.Default (Default)
-import qualified Data.Foldable as F
-import GHC.Int (Int64)
-import Print (printRows)
+import           Control.Arrow           (returnA)
+import qualified Data.Foldable           as F
+import           GHC.Int                 (Int64)
+import           Print                   (printRows)
 
 -- # Projection
 
