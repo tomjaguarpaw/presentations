@@ -8,9 +8,9 @@ import qualified Database.PostgreSQL.Simple as PGS
 import Data.Profunctor.Product.Default (Default)
 
 connectInfo :: PGS.ConnectInfo
-connectInfo =  PGS.ConnectInfo { PGS.connectHost = "212.71.249.246"
-                               , PGS.connectPort = 5432
-                               , PGS.connectUser = "opaleye_guest"
+connectInfo =  PGS.ConnectInfo { PGS.connectHost     = "212.71.249.246"
+                               , PGS.connectPort     = 5432
+                               , PGS.connectUser     = "opaleye_guest"
                                , PGS.connectPassword = "opaleye_guest"
                                , PGS.connectDatabase = "opaleye_tutorial" }
 
