@@ -2,7 +2,15 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Schema (module Schema, module SchemaAnswer) where
+module Schema ( module Schema
+              , SchemaAnswer.EmployeeOutput'(..)
+              , SchemaAnswer.EmployeeOutputCol
+              , output
+              , SchemaAnswer.Manager'(..)
+              , SchemaAnswer.ManagerCol
+              , SchemaAnswer.Manager
+              , managers
+              ) where
 
 import Opaleye
 import Data.Profunctor.Product.TH (makeAdaptorAndInstance)
@@ -30,6 +38,11 @@ employees = Table "employee" (pEmployee Employee {
   , eDepartment = required "department"
   , eCountry    = required "country"
   })
+
+{- Exercise: Implement definitions for the output and manager table
+   based on the definitions below.  NB the Haskell type for int8 is
+   'Column PGInt8'.
+-}
 
 {-
 
