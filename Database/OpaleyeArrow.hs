@@ -11,6 +11,7 @@ import Control.Arrow (returnA)
 import Data.Profunctor.Product.Default (Default)
 import qualified Database.PostgreSQL.Simple as PGS
 import qualified Data.Foldable as F
+import GHC.Int (Int64)
 
 connectInfo :: PGS.ConnectInfo
 connectInfo =  PGS.ConnectInfo { PGS.connectHost = "212.71.249.246"
@@ -37,6 +38,8 @@ workplace = proc () -> do
   employee <- queryTable employees -< ()
   returnA -< (eName employee, eCountry employee)
 
+-- printRows (Nothing :: Maybe (String, String)) workplace
+
 
 -- # Restriction
 
@@ -47,6 +50,9 @@ ukEmployees = proc () -> do
   restrict -< eCountry employee .== constant "UK"
 
   returnA -< employee
+
+-- printRows (Nothing :: Maybe Employee) ukEmployees
+
 
 -- restrict :: QueryArr (Column PGBool) ()
 -- guard :: Bool -> [()]
@@ -67,26 +73,30 @@ managerOf = proc () -> do
 
   returnA -< (eName employee, mManager manager)
 
+-- printRows (Nothing :: Maybe (String, String)) managerOf
+
 
 
 -- # Aggregation
 
 linesByEmployeeCountry
-  :: Query (Column PGText, Column PGText, Column PGInt4)
+  :: Query (Column PGText, Column PGText, Column PGInt8)
 linesByEmployeeCountry = proc () -> do
   outputRow <- queryTable output -< ()
   returnA -< (oName outputRow, oCountry outputRow, oOutput outputRow)
 
 totalLinesByEmployeeCountry
-  :: Query (Column PGText, Column PGText, Column PGInt4)
+  :: Query (Column PGText, Column PGText, Column PGInt8)
 totalLinesByEmployeeCountry =
   aggregate (PP.p3 (groupBy, groupBy, Opaleye.sum)) linesByEmployeeCountry
+
+-- printRows (Nothing :: Maybe (String, String, Int64)) totalLinesByEmployeeCountry
 
 
 
 -- # Bad aggregation can't happen with arrows
 
-linesByEmployeeIn :: QueryArr (Column PGText) (Column PGText, Column PGInt4)
+linesByEmployeeIn :: QueryArr (Column PGText) (Column PGText, Column PGInt8)
 linesByEmployeeIn = proc country -> do
   outputRow <- queryTable output -< ()
   restrict -< oCountry outputRow .== country

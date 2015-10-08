@@ -35,15 +35,23 @@ type EmployeeCol = Employee' (Column PGText)
                              (Column PGText)
                              (Column PGText)
 
+type Employee = Employee' String
+                          String
+                          String
+
 type EmployeeOutputCol =
   EmployeeOutput' (Column PGText)
                   (Column PGText)
                   (Column PGText)
-                  (Column PGInt4)
+                  (Column PGInt8)
 
 type ManagerCol =
   Manager' (Column PGText)
            (Column PGText)
+
+type Manager =
+  Manager' String
+           String
 
 employees :: Table EmployeeCol EmployeeCol
 employees = Table "employee" (pEmployee Employee {
@@ -61,7 +69,7 @@ output = Table "output" (pEmployeeOutput EmployeeOutput {
   })
 
 managers :: Table ManagerCol ManagerCol
-managers = Table "output" (pManager Manager {
+managers = Table "manager" (pManager Manager {
     mDepartment = required "department"
   , mManager    = required "manager"
   })
