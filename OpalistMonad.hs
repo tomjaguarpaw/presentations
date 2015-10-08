@@ -21,9 +21,6 @@ ukEmployees1 = filter ((== "UK") . eCountry) $ do
   employee <- employees
   return employee
 
-third :: (a, b, c) -> c
-third (_, _, z) = z
-
 
 
 -- Second try
