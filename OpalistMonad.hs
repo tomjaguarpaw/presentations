@@ -8,18 +8,18 @@ import qualified Data.Profunctor.Product as PP
 
 workplace :: [(String, String)]
 workplace = do
-  (employee, _, country) <- employees
-  return (employee, country)
+  employee <- employees
+  return (eName employee, eCountry employee)
 
 
 
 -- # Restriction
 
 -- First try
-ukEmployees1 :: [(String, String, String)]
-ukEmployees1 = filter ((== "UK") . third) $ do
-  employeeRow <- employees
-  return employeeRow
+ukEmployees1 :: [Employee]
+ukEmployees1 = filter ((== "UK") . eCountry) $ do
+  employee <- employees
+  return employee
 
 third :: (a, b, c) -> c
 third (_, _, z) = z
@@ -27,17 +27,17 @@ third (_, _, z) = z
 
 
 -- Second try
-ukEmployees2 :: [(String, String, String)]
+ukEmployees2 :: [Employee]
 ukEmployees2 = do
-  employeeRow <- employees
+  employee <- employees
 
   -- Mysterious restriction functionality
-  if third employeeRow == "UK" then
+  if eCountry employee == "UK" then
     [()]
   else
     []
 
-  return employeeRow
+  return employee
 
 
 
@@ -47,13 +47,13 @@ guard True  = [()]
 guard False = []
 
 -- Third try
-ukEmployees3 :: [(String, String, String)]
+ukEmployees3 :: [Employee]
 ukEmployees3 = do
-  employeeRow <- employees
+  employee <- employees
 
-  guard (third employeeRow == "UK")
+  guard (eCountry employee == "UK")
 
-  return employeeRow
+  return employee
 
 
 
@@ -64,12 +64,12 @@ ukEmployees3 = do
 
 managerOf :: [(String, String)]
 managerOf = do
-  (employee, department, _) <- employees
-  (department', manager)    <- managers
+  employee               <- employees
+  (department', manager) <- managers
 
-  guard (department == department')
+  guard (eDepartment employee == department')
 
-  return (employee, manager)
+  return (eName employee, manager)
 
 
 
@@ -78,7 +78,7 @@ managerOf = do
 
 linesByEmployeeCountry :: [(String, String, Int)]
 linesByEmployeeCountry = do
-  (employee, _, country, lines) <- output
+  (employee, country, _, lines) <- output
   return (employee, country, lines)
 
 totalLinesByEmployeeCountry :: [(String, String, Int)]
@@ -100,12 +100,12 @@ totalLinesByEmployeeIn country =
 
 linesByEmployeeAtHome :: [(String, Int)]
 linesByEmployeeAtHome = do
-  (employee, _, country) <- employees
-  (employee', lines) <- totalLinesByEmployeeIn country
+  employee <- employees
+  (employee', lines) <- totalLinesByEmployeeIn (eCountry employee)
 
-  guard (employee == employee')
+  guard (eName employee == employee')
 
-  return (employee, lines)
+  return (eName employee, lines)
 
 {-
 

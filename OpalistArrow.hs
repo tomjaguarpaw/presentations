@@ -20,27 +20,24 @@ printRows = mapM_ print . runQuery
 
 workplace :: Query (String, String)
 workplace = proc () -> do
-  (employee, _, country) <- employees -< ()
-  returnA -< (employee, country)
+  employee <- employees -< ()
+  returnA -< (eName employee, eCountry employee)
 
 
 -- # Restriction
 
-ukEmployees :: Query (String, String, String)
+ukEmployees :: Query Employee
 ukEmployees = proc () -> do
-  employeeRow <- employees -< ()
+  employee <- employees -< ()
 
-  restrict -< third employeeRow == "UK"
+  restrict -< eCountry employee == "UK"
 
-  returnA -< employeeRow
+  returnA -< employee
 
 restrict :: QueryArr Bool ()
 restrict = Kleisli guard
 
 -- Recall: guard :: Bool -> [()]
-
-third :: (a, b, c) -> c
-third (_, _, z) = z
 
 
 -- # Join
@@ -49,12 +46,12 @@ third (_, _, z) = z
 
 managerOf :: Query (String, String)
 managerOf = proc () -> do
-  (employee, department, _) <- employees -< ()
-  (department', manager)    <- managers  -< ()
+  employee               <- employees -< ()
+  (department', manager) <- managers  -< ()
 
-  restrict -< department == department'
+  restrict -< eDepartment employee == department'
 
-  returnA -< (employee, manager)
+  returnA -< (eName employee, manager)
 
 
 

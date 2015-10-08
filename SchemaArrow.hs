@@ -1,9 +1,10 @@
-module SchemaArrow where
+module SchemaArrow ( module SchemaArrow
+                   , Schema.Employee(..)) where
 
 import Opalist (listQuery, Query)
 import qualified Schema
 
-employees :: Query (String, String, String)
+employees :: Query Schema.Employee
 employees = listQuery Schema.employees
 
 output :: Query (String, String, String, Int)

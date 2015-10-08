@@ -1,12 +1,18 @@
 module Schema where
 
-employees :: [(String, String, String)]
-employees = [ ("Tom",   "Back end",  "UK")
-            , ("Neil",  "Back end",  "UK")
-            , ("Alice", "Front end", "FR")
-            , ("John",  "Front end", "UK")
-            , ("Anne",  "Testing",   "FR")
-            , ("Ryan",  "Testing",   "FR") ]
+data Employee = Employee {
+    eName       :: String
+  , eDepartment :: String
+  , eCountry    :: String
+  }
+
+employees :: [Employee]
+employees = [ Employee "Tom"   "Back end"  "UK"
+            , Employee "Neil"  "Back end"  "UK"
+            , Employee "Alice" "Front end" "FR"
+            , Employee "John"  "Front end" "UK"
+            , Employee "Anne"  "Testing"   "FR"
+            , Employee "Ryan"  "Testing"   "FR" ]
 
 output :: [(String, String, String, Int)]
 output = [ ("Tom",   "Monday",  "UK", 530)
