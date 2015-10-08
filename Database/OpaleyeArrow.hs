@@ -1,4 +1,6 @@
 {-# LANGUAGE Arrows #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module OpalistArrow where
 
@@ -6,9 +8,20 @@ import Schema
 import Opaleye
 import qualified Data.Profunctor.Product as PP
 import Control.Arrow (returnA)
+import Data.Profunctor.Product.Default (Default)
+import qualified Database.PostgreSQL.Simple as PGS
+import qualified Data.Foldable as F
 
---printRows :: Show a => Query a -> IO ()
---printRows = mapM_ print . runQuery
+printRows :: forall a b proxy.
+             (Default QueryRunner a b, Show b)
+          => proxy b
+          -> PGS.Connection
+          -> Query a
+          -> IO ()
+printRows _ conn q = do
+  rows <- runQuery conn q
+  let _ = rows :: [b]
+  mapM_ print rows
 
 -- # Projection
 
