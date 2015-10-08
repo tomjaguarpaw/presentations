@@ -2,10 +2,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Schema where
+module Schema (module Schema, module SchemaAnswer) where
 
 import Opaleye
 import Data.Profunctor.Product.TH (makeAdaptorAndInstance)
+import SchemaAnswer
 
 data Employee' a b c = Employee {
     eName       :: a
@@ -15,22 +16,6 @@ data Employee' a b c = Employee {
   deriving Show
 $(makeAdaptorAndInstance "pEmployee" ''Employee')
 
-data EmployeeOutput' a b c d = EmployeeOutput {
-    oName    :: a
-  , oDay     :: b
-  , oCountry :: c
-  , oOutput  :: d
-  }
-  deriving Show
-$(makeAdaptorAndInstance "pEmployeeOutput" ''EmployeeOutput')
-
-data Manager' a b = Manager {
-    mDepartment :: a
-  , mManager    :: b
-  }
-  deriving Show
-$(makeAdaptorAndInstance "pManager" ''Manager')
-
 type EmployeeCol = Employee' (Column PGText)
                              (Column PGText)
                              (Column PGText)
@@ -39,20 +24,6 @@ type Employee = Employee' String
                           String
                           String
 
-type EmployeeOutputCol =
-  EmployeeOutput' (Column PGText)
-                  (Column PGText)
-                  (Column PGText)
-                  (Column PGInt8)
-
-type ManagerCol =
-  Manager' (Column PGText)
-           (Column PGText)
-
-type Manager =
-  Manager' String
-           String
-
 employees :: Table EmployeeCol EmployeeCol
 employees = Table "employee" (pEmployee Employee {
     eName       = required "name"
@@ -60,16 +31,24 @@ employees = Table "employee" (pEmployee Employee {
   , eCountry    = required "country"
   })
 
-output :: Table EmployeeOutputCol EmployeeOutputCol
-output = Table "output" (pEmployeeOutput EmployeeOutput {
-    oName    = required "name"
-  , oDay     = required "day"
-  , oCountry = required "country"
-  , oOutput  = required "output"
-  })
+{-
 
-managers :: Table ManagerCol ManagerCol
-managers = Table "manager" (pManager Manager {
-    mDepartment = required "department"
-  , mManager    = required "manager"
-  })
+CREATE TABLE employee (
+  name       text NOT NULL,
+  department text NOT NULL,
+  country    text NOT NULL
+);
+
+CREATE TABLE output (
+  name    text    NOT NULL,
+  day     text    NOT NULL,
+  country text    NOT NULL,
+  output  integer NOT NULL
+);
+
+CREATE TABLE manager (
+  department text    NOT NULL,
+  manager    text    NOT NULL
+);
+
+-}
