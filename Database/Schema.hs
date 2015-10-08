@@ -56,7 +56,7 @@ CREATE TABLE output (
   name    text    NOT NULL,
   day     text    NOT NULL,
   country text    NOT NULL,
-  output  integer NOT NULL
+  output  int8    NOT NULL
 );
 
 CREATE TABLE manager (
