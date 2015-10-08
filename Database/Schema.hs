@@ -16,18 +16,22 @@ import Opaleye
 import Data.Profunctor.Product.TH (makeAdaptorAndInstance)
 import SchemaAnswer
 
+-- Make a record type with type variables for each field 
 data Employee' a b c = Employee {
     eName       :: a
   , eDepartment :: b
   , eCountry    :: c
   }
   deriving Show
+-- Add this little bit of Template Haskell
 $(makeAdaptorAndInstance "pEmployee" ''Employee')
 
+-- Add a type synonym full of columns
 type EmployeeCol = Employee' (Column PGText)
                              (Column PGText)
                              (Column PGText)
 
+-- Add a type synonym full of Haskell types
 type Employee = Employee' String
                           String
                           String
