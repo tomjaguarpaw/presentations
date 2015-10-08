@@ -5,6 +5,7 @@ data Employee = Employee {
   , eDepartment :: String
   , eCountry    :: String
   }
+  deriving Show
 
 data EmployeeOutput = EmployeeOutput {
     oName    :: String
@@ -12,11 +13,13 @@ data EmployeeOutput = EmployeeOutput {
   , oCountry :: String
   , oOutput  :: Int
   }
+  deriving Show
 
 data Manager = Manager {
     mDepartment :: String
   , mManager    :: String
   }
+  deriving Show
 
 employees :: [Employee]
 employees = [ Employee "Tom"   "Back end"  "UK"
