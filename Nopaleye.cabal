@@ -16,7 +16,12 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Schema, Opalist, OpalistArrow, Foldl, SchemaArrow, OpalistMonad
+  exposed-modules:     Schema
+                     , Opalist
+		     , OpalistArrow
+		     , Foldl
+		     , SchemaArrow
+		     , OpalistMonad
   -- other-modules:       
   other-extensions:    ExistentialQuantification, Arrows
   build-depends:       base >=4.6 && <5
