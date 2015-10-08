@@ -64,12 +64,12 @@ ukEmployees3 = do
 
 managerOf :: [(String, String)]
 managerOf = do
-  employee               <- employees
-  (department', manager) <- managers
+  employee <- employees
+  manager  <- managers
 
-  guard (eDepartment employee == department')
+  guard (eDepartment employee == mDepartment manager)
 
-  return (eName employee, manager)
+  return (eName employee, mManager manager)
 
 
 

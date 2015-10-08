@@ -1,6 +1,7 @@
 module SchemaArrow ( module SchemaArrow
                    , Schema.Employee(..)
-                   , Schema.EmployeeOutput(..)) where
+                   , Schema.EmployeeOutput(..)
+                   , Schema.Manager(..)) where
 
 import Opalist (listQuery, Query)
 import qualified Schema
@@ -11,5 +12,5 @@ employees = listQuery Schema.employees
 output :: Query Schema.EmployeeOutput
 output = listQuery Schema.output
 
-managers :: Query (String, String)
+managers :: Query Schema.Manager
 managers = listQuery Schema.managers

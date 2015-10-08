@@ -13,6 +13,11 @@ data EmployeeOutput = EmployeeOutput {
   , oOutput  :: Int
   }
 
+data Manager = Manager {
+    mDepartment :: String
+  , mManager    :: String
+  }
+
 employees :: [Employee]
 employees = [ Employee "Tom"   "Back end"  "UK"
             , Employee "Neil"  "Back end"  "UK"
@@ -35,7 +40,7 @@ output = [ EmployeeOutput "Tom"   "Monday"  "UK" 530
          , EmployeeOutput "Ryan"  "Monday"  "UK" 360
          , EmployeeOutput "Ryan"  "Tuesday" "UK" 380 ]
 
-managers :: [(String, String)]
-managers = [ ("Back end",  "Tom")
-           , ("Front end", "Alice")
-           , ("Testing",   "Anne") ]
+managers :: [Manager]
+managers = [ Manager "Back end"  "Tom"
+           , Manager "Front end" "Alice"
+           , Manager "Testing"   "Anne" ]

@@ -46,12 +46,12 @@ restrict = Kleisli guard
 
 managerOf :: Query (String, String)
 managerOf = proc () -> do
-  employee               <- employees -< ()
-  (department', manager) <- managers  -< ()
+  employee <- employees -< ()
+  manager  <- managers  -< ()
 
-  restrict -< eDepartment employee == department'
+  restrict -< eDepartment employee == mDepartment manager
 
-  returnA -< (eName employee, manager)
+  returnA -< (eName employee, mManager manager)
 
 
 
