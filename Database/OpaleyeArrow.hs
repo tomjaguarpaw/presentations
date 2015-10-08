@@ -12,13 +12,20 @@ import Data.Profunctor.Product.Default (Default)
 import qualified Database.PostgreSQL.Simple as PGS
 import qualified Data.Foldable as F
 
+connectInfo :: PGS.ConnectInfo
+connectInfo =  PGS.ConnectInfo { PGS.connectHost = "212.71.249.246"
+                               , PGS.connectPort = 5432
+                               , PGS.connectUser = "opaleye_guest"
+                               , PGS.connectPassword = "opaleye_guest"
+                               , PGS.connectDatabase = "opaleye_tutorial" }
+
 printRows :: forall a b proxy.
              (Default QueryRunner a b, Show b)
           => proxy b
-          -> PGS.Connection
           -> Query a
           -> IO ()
-printRows _ conn q = do
+printRows _ q = do
+  conn <- PGS.connect connectInfo
   rows <- runQuery conn q
   let _ = rows :: [b]
   mapM_ print rows
