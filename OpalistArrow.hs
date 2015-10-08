@@ -78,17 +78,17 @@ linesByEmployeeIn = proc country -> do
 
 {- 
 
-  We can't write 'totalLinesByEmployeeIn' because it's structure is
-syntactically ruled out by arrow notation, given that aggregation
-works on 'QueryArr () r' rather than 'QueryArr a r'.
+  We can't write 'totalLinesByEmployeeIn' because its structure is
+  syntactically ruled out by arrow notation, given that aggregation
+  works on 'QueryArr () r' rather than 'QueryArr a r'.
 
-totalLinesByEmployeeIn :: QueryArr String (String, Int)
-totalLinesByEmployeeIn = proc country -> do
-  aggregate (PP.p2 (groupBy, sumA)) linesByEmployeeIn -< country
+  totalLinesByEmployeeIn :: QueryArr String (String, Int)
+  totalLinesByEmployeeIn = proc country -> do
+    aggregate (PP.p2 (groupBy, sumA)) linesByEmployeeIn -< country
 
- Couldn't match type `String' with `()'
-    Expected type: QueryArr () (String, Int)
-      Actual type: QueryArr String (String, Int)
+  Couldn't match type `String' with `()'
+     Expected type: QueryArr () (String, Int)
+       Actual type: QueryArr String (String, Int)
 -}
 
 
