@@ -22,7 +22,7 @@ library
   -- other-modules:       
   other-extensions:    ExistentialQuantification, Arrows
   build-depends:       base >=4.6 && <5
-                     , opaleye
+                     , opaleye >= 0.4.1.0
                      , postgresql-simple >= 0.4 && < 0.6
                      , profunctors >=5.1 && <5.2
                      , product-profunctors >=0.6 && <0.7
