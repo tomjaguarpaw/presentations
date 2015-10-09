@@ -24,3 +24,6 @@ printRows _ q = do
   rows <- runQuery conn q
   let _ = rows :: [b]
   mapM_ print rows
+
+printSql :: Default Unpackspec a a => Query a -> IO ()
+printSql = putStrLn . showSqlForPostgres

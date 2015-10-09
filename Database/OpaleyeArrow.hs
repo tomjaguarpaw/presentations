@@ -8,7 +8,7 @@ import qualified Data.Profunctor.Product as PP
 import           Control.Arrow           (returnA)
 import qualified Data.Foldable           as F
 import           GHC.Int                 (Int64)
-import           Print                   (printRows)
+import           Print                   (printRows, printSql)
 
 -- # Projection
 
