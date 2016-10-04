@@ -4,11 +4,12 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{helvet}
+\usepackage{minted}
 
-\title{Purely Agile Beamer Theme}
-\subtitle{Subtitle}
+\title{Haskell programs: how do they run?}
+\subtitle{Demystifying lazy evaluation}
 \author{Tom Ellis}
-\date{\today}
+\date{6th October 2016}
 
 \begin{document}
 
@@ -19,6 +20,1163 @@
 \begin{frame}
 \frametitle{A nice frame}
 \framesubtitle{Subtitle}
+
+\begin{itemize}
+\item graph reduction
+\item redex
+\item weak head normal form (WHNF)
+\item constant applicative form (CAF)
+\item ``delays the evaluation of an expression until its value is needed''
+\item call by need
+\end{itemize}
+
+I hope you will be able to work out everything else from first
+principles.  Not everything is literally correct but it will give you
+the right understanding for everything except the lowest level
+performance hacking.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Normal form}
+
+  \begin{itemize}
+  \item literals
+  \item variables
+  \item constructors
+  \item let
+  \item lambda
+  \item function application
+  \item case
+  \end{itemize}
+
+  In a function application, the function itself and the arguments
+  must be variables or literals.
+
+  Constructors must be ``saturated'', i.e.\ no missing arguments.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Normal form}
+  \framesubtitle{Example}
+
+  \begin{minted}{haskell}
+    -- Haskell
+    let x = 1 + 1
+    f y = plus y (3 * y)
+      where plus = (+)
+    in f x
+
+    -- Normal form
+    let x = 1 + 1
+        f = \y -> let plus = (+)
+                      a1 = 3 * y
+                  in plus y a1
+    in f x
+  \end{minted}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Evaluation}
+\framesubtitle{What do we evaluate to?}
+
+The result of an evaluation is a ``value''.  A value is
+
+\begin{itemize}
+\item a (fully saturated) constructor (including primitive types), or
+\item a lambda
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Evaluation}
+  \framesubtitle{How do we evaluate?}
+
+  \begin{itemize}
+  \item literals -- already evaluated
+
+  \item \verb+let x = e in body+: create a closure for \verb+e+ on the
+    heap and let \verb+x+ be a pointer to this closure, i.e.\ all
+    mentions of \verb+x+ scoped by this binding point to that closure.
+
+  \item variables \verb+x+: \verb+x+ is a pointer to a closure.
+    Evaluate that closure to a value and overwrite its memory location
+    with the value (``memoization'').
+  \item constructors -- already evaluated
+  \item lambda -- already evaluated
+  \item \verb+f a+: evaluate \verb+f+ to \verb+\x -> e+
+  \item \verb+case e of alts+: evaluate \verb+e+, check which
+    alternative matches and evaluate it
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Evaluation}
+  \framesubtitle{Heap and stack}
+
+  \begin{itemize}
+  \item The only thing that allocates on the heap is \verb+let+.
+
+  \item The only thing that consumes stack (that we care about) is
+    \verb+case+ whilst it is evaluating its scrutinee.
+  \end{itemize}
+
+\end{frame}
+
+\iffalse
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    let x = 1 + 1
+        f = \y -> let plus = (+)
+                      a1 = 3 * y
+                  in plus y a1
+    in f x
+\end{minted}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    f x
+
+    -- Heap
+    x = 1 + 1
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    let plus = (+)
+        a1 = 3 * x
+    in plus x a1
+
+    -- Heap
+    x = 1 + 1
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    plus x a1
+
+    -- Heap
+    x = 1 + 1
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 3 * x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) x a1
+
+    -- Heap
+    x = 1 + 1
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 3 * x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) x a1 | a1
+
+    -- Heap
+    x = 1 + 1
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 3 * x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) x a1 | a1 = 3 * x
+
+    -- Heap
+    x = 1 + 1
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 3 * x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) x a1 | a1 = 3 * x | x
+
+    -- Heap
+    x = 1 + 1
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 3 * x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) x a1 | a1 = 3 * x | x = 1 + 1
+
+    -- Heap
+    x = 1 + 1
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 3 * x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) x a1 | a1 = 3 * x | x = 2
+
+    -- Heap
+    x = 2
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 3 * x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) x a1 | a1 = 3 * 2
+
+    -- Heap
+    x = 2
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 3 * x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) x a1 | a1 = 6
+
+    -- Heap
+    x = 2
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 6
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    (+) 2 6
+
+    -- Heap
+    x = 2
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 6
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+    -- Evaluating
+    8 -- A value.  The end!
+
+    -- Heap
+    x = 2
+    f = \y -> let plus = (+)
+                  a1 = 3 * y
+              in plus y a1
+    plus = (+)
+    a1 = 6
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+
+zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
+zipWith _ _      _      = []
+
+tail (x:xs) = xs
+
+head (x:xs) = x
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+
+fibs = let tailfibs = tail fibs
+           fibs2    = zipWith (+) fibs tailfibs
+           fibs1    = 1 : fibs2
+       in fibs = 0 : fibs1
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
+zipWith _ _      _      = []
+
+zipWith = \f xs ys -> case xs of
+    []    -> []
+    x:xs' -> case ys of
+        []    -> []
+        y:ys' -> let first = f x y
+                     rest  = zipWith f xs' ys'   
+                 in first : rest
+\end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+
+\begin{minted}{haskell}
+tail (x:xs) = xs
+
+head (x:xs) = x
+
+tail = \xs -> case xs of x:xs' -> xs
+
+head = \xs -> case xs of x:xs' -> x
+\end{minted}
+\end{frame}
+
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+let fibs      = ...
+    zipWith   = ...
+    head      = ...
+    tail      = ...
+    tailfibs1 = tail fibs
+    tailfibs2 = tail tailfibs1
+    tailfibs3 = tail tailfibs2
+in head tailfibs3
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+head tailfibs3
+
+-- Heap
+fibs      = ...
+zipWith   = ...
+head      = ...
+tail      = \xs -> case xs of x:xs' -> xs'
+tailfibs1 = tail fibs
+tailfibs2 = tail tailfibs1
+tailfibs3 = tail tailfibs2
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+
+-- Heap
+fibs      = ...
+zipWith   = ...
+head      = ...
+tail      = \xs -> case xs of x:xs' -> xs'
+tailfibs1 = tail fibs
+tailfibs2 = tail tailfibs1
+tailfibs3 = tail tailfibs2
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3
+
+-- Heap
+fibs      = ...
+zipWith   = ...
+head      = ...
+tail      = \xs -> case xs of x:xs' -> xs'
+tailfibs1 = tail fibs
+tailfibs2 = tail tailfibs1
+tailfibs3 = tail tailfibs2
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs
+|
+tailfibs3 = tail tailfibs2
+
+-- Heap
+fibs      = ...
+zipWith   = ...
+head      = ...
+tail      = \xs -> case xs of x:xs' -> xs'
+tailfibs1 = tail fibs
+tailfibs2 = tail tailfibs1
+tailfibs3 = tail tailfibs2
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+
+-- Heap
+fibs      = ...
+zipWith   = ...
+head      = ...
+tail      = \xs -> case xs of x:xs' -> xs'
+tailfibs1 = tail fibs
+tailfibs2 = tail tailfibs1
+tailfibs3 = tail tailfibs2
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2
+
+-- Heap
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = case tailfibs1 of x:xs' -> xs' 
+|
+tailfibs1 = case fibs of x:xs' -> xs'
+
+-- Heap
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = case tailfibs1 of x:xs' -> xs' 
+|
+tailfibs1 = case fibs of x:xs' -> xs'
+|
+fibs
+
+-- Heap
+fibs = 0 : fibs1
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = case tailfibs1 of x:xs' -> xs' 
+|
+tailfibs1 = case fibs of x:xs' -> xs'
+|
+fibs = 0 : fibs1
+
+-- Heap
+fibs = 0 : fibs1
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = case tailfibs1 of x:xs' -> xs' 
+|
+tailfibs1 = fibs1
+
+-- Heap
+fibs = 0 : fibs1
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = case tailfibs1 of x:xs' -> xs' 
+|
+tailfibs1 = fibs1
+|
+fibs1 
+
+-- Heap
+fibs1 = 1 : fibs2
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = case tailfibs1 of x:xs' -> xs' 
+|
+tailfibs1 = 1 : fibs2
+
+-- Heap
+fibs1 = 
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = case 1 : fibs2 of x:xs' -> xs' 
+
+-- Heap
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = fibs2
+|
+fibs2
+
+-- Heap
+fibs2 = zipWith (+) fibs tailfibs
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case tailfibs3 of x:xs' -> xs'
+|
+tailfibs3 = case tailfibs2 of x:xs' -> xs' 
+|
+tailfibs2 = fibs2
+|
+fibs2 = zipWith (+) fibs tailfibs
+
+-- Heap
+...
+\end{minted}
+\end{frame}
+\fi
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+repeat x = xs where xs = x : xs
+
+repeat = \x -> let xs = x : xs
+               in xs
+
+head (x:xs) = x
+
+head = \xs -> case xs of x:xs' -> x  
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+map f []     = []
+map f (x:xs) = f x : map f xs
+
+map = \f xs -> case xs of
+  []    -> []   
+  x:xs' -> let first = f x
+               rest  = map f xs'
+           in first : rest
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+head (map (\x -> x + x) (repeat (10 + 1)))
+
+let f = \x -> x + x
+    t = 10 + 1
+    r = repeat t
+    m = map f r
+in head m
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+let f = \x -> x + x
+    t = 10 + 1
+    r = repeat t
+    m = map f r
+in head m
+
+-- Heap
+map = ...
+repeat = ...
+head = ...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+head m
+
+-- Heap
+map = ...
+repeat = ...
+head = \xs -> case xs of x:xs' -> x
+f = \x -> x + x
+t = 10 + 1
+r = repeat t
+m = map f r
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+
+-- Heap
+map = ...
+repeat = ...
+head = ...
+f = \x -> x + x
+t = 10 + 1
+r = repeat t
+m = map f r
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m
+
+-- Heap
+map = ...
+repeat = ...
+head = ...
+f = \x -> x + x
+t = 10 + 1
+r = repeat t
+m = map f r
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = map f r
+
+-- Heap
+map = ...
+repeat = ...
+head = ...
+f = \x -> x + x
+t = 10 + 1
+r = repeat t
+m = map f r
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = case r of
+  []    -> []   
+  x:xs' -> let first = f x
+               rest  = map f xs'
+           in first : rest
+
+-- Heap
+r = repeat t
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = case r of
+  []    -> []   
+  x:xs' -> let first = f x
+               rest  = map f xs'
+           in first : rest
+|
+r
+
+-- Heap
+r = repeat t
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = case r of
+  []    -> []   
+  x:xs' -> let first = f x
+               rest  = map f xs'
+           in first : rest
+|
+r = repeat t
+
+-- Heap
+r = repeat t
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = case r of
+  []    -> []   
+  x:xs' -> let first = f x
+               rest  = map f xs'
+           in first : rest
+|
+r = let xs = t : xs
+    in xs
+
+-- Heap
+r = repeat t
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = case r of
+  []    -> []   
+  x:xs' -> let first = f x
+               rest  = map f xs'
+           in first : rest
+|
+r = xs
+
+-- Heap
+xs = t : xs
+r = repeat t
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = case r of
+  []    -> []   
+  x:xs' -> let first = f x
+               rest  = map f xs'
+           in first : rest
+|
+r = xs
+
+-- Heap
+xs = t : xs
+r ---^
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = let first = f t
+        rest  = map f xs
+    in first : rest
+
+-- Heap
+xs = t : xs
+r ---^
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+case m of x:xs -> x
+|
+m = first : rest
+
+-- Heap
+xs = t : xs
+r ---^
+first = f t
+rest  = map f xs
+m = first : rest
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+first
+
+-- Heap
+xs = t : xs
+r ---^
+first = f t
+rest  = map f xs
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+first = f t
+
+-- Heap
+xs = t : xs
+r ---^
+first = f t
+rest  = map f xs
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+first = t + t
+
+-- Heap
+xs = t : xs
+r ---^
+first = f t
+rest  = map f xs
+t = 10 + 1
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+first = t + t
+|
+t = 10 + 1
+
+-- Heap
+xs = t : xs
+r ---^
+first = f t
+rest  = map f xs
+t = 10 + 1
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+first = t + t
+|
+t = 11
+
+-- Heap
+xs = t : xs
+r ---^
+first = f t
+rest  = map f xs
+t = 11
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+first = 11 + 11
+
+-- Heap
+xs = t : xs
+r ---^
+first = f t
+rest  = map f xs
+t = 11
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Evaluating
+first = 22
+
+-- Heap
+xs = t : xs
+r ---^
+first = 22
+rest  = map f xs
+t = 11
+...
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
+\framesubtitle{Evaluation example}
+\begin{minted}{haskell}
+-- Finished evaluating!
+22
+
+-- Heap
+xs = t : xs
+r ---^
+first = 22
+rest  = map f xs
+t = 11
+...
+\end{minted}
 \end{frame}
 
 \end{document}
