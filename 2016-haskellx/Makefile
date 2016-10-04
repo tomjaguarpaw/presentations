@@ -1,2 +1,2 @@
 presentation.pdf: presentation.tex
-	pdflatex presentation.tex
+	pdflatex -shell-escape presentation.tex
