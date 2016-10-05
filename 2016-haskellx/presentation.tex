@@ -488,7 +488,8 @@ f = \x -> x + x
 \frametitle{Evaluation}
 \framesubtitle{Primitive addition}
 \begin{minted}{haskell}
--- (+) evaluates its arguments and calls a primitive operation
+-- (+) evaluates its arguments and
+--  calls a primitive operation
 (+) = \x y -> case x of
      x' -> case y of  
          y' -> primitive_plus x' y'
