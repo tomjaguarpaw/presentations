@@ -486,6 +486,17 @@ f = \x -> x + x
 
 \begin{frame}[t,fragile]
 \frametitle{Evaluation}
+\framesubtitle{Primitive addition}
+\begin{minted}{haskell}
+-- (+) evaluates its arguments and calls a primitive operation
+(+) = \x y -> case x of
+     x' -> case y of  
+         y' -> primitive_plus x' y'
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Evaluation}
 \framesubtitle{Evaluation example}
 \begin{minted}{haskell}
 -- Evaluating
@@ -850,6 +861,225 @@ z'98
 |
 ...
 3
+-- Finally we unwind the stack
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl'}
+\begin{minted}{haskell}
+foldl = \f z xs -> case xs of
+  []    -> z
+  x:xs' -> let z' = f z x
+           in foldl f z' xs'
+
+
+foldl' = \f z xs -> case xs of
+  []    -> z
+  x:xs' -> case f z x of
+      z' -> foldl' f z' xs'
+
+
+-- Evaluate
+foldl' (+) 0 [1..100]           
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl'}
+\begin{minted}{haskell}
+-- Evaluating
+case [1..100] of
+  []    -> 0
+  x:xs' -> case (+) 0 x of
+      z' -> foldl' (+) z' xs'
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl'}
+\begin{minted}{haskell}
+case (+) 0 1 of
+      z' -> foldl' (+) z' xs'1
+
+-- Heap
+xs'1 = [2..100]      
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl'}
+\begin{minted}{haskell}
+case (+) 0 1 of
+      z' -> foldl' (+) z' xs'1
+|
+(+) 0 1      
+
+-- Heap
+xs'1 = [2..100]      
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl'}
+\begin{minted}{haskell}
+case (+) 0 1 of
+      z' -> foldl' (+) z' xs'1
+|
+1
+
+-- Heap
+xs'1 = [2..100]      
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl'}
+\begin{minted}{haskell}
+foldl' (+) 1 xs'1
+
+-- Heap
+xs'1 = [2..100]      
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl'}
+\begin{minted}{haskell}
+foldl' (+) 3 xs'2
+
+-- Heap
+xs'2 = [3..100]      
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl'}
+\begin{minted}{haskell}
+foldl' (+) 6 xs'3
+-- Evaluation will proceed in constant space
+
+-- Heap
+xs'3 = [4..100]      
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldr}
+\begin{minted}{haskell}
+foldr = \f z xs -> case xs of
+  []    -> z
+  x:xs' -> let rest = foldr (+) 0 xs'
+           in f x rest
+
+-- Evaluate
+foldr (+) 0 [1..100]  
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldr}
+\begin{minted}{haskell}
+-- Evaluate
+case [1..100] of
+  []    -> z
+  x:xs' -> let rest = foldr (+) 0 xs'
+           in (+) x rest
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldr}
+\begin{minted}{haskell}
+-- Evaluate
+(+) 1 rest1
+
+-- Heap
+rest1 = foldr (+) 0 xs'1
+xs'1 = [2..100]
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldr}
+\begin{minted}{haskell}
+-- Evaluate
+(+) 1 rest1
+|
+rest1
+
+-- Heap
+rest1 = foldr (+) 0 xs'1
+xs'1 = [2..100]
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldr}
+\begin{minted}{haskell}
+-- Evaluate
+(+) 1 rest1
+|
+rest1 = foldr (+) 0 xs'1
+
+-- Heap
+rest1 = foldr (+) 0 xs'1
+xs'1 = [2..100]
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldr}
+\begin{minted}{haskell}
+-- Evaluate
+(+) 1 rest1
+|
+rest1 = case xs'1 of
+  []    -> 0
+  x:xs' -> let rest = foldr (+) 0 xs'
+           in (+) x rest
+
+-- Heap
+rest1 = foldr (+) 0 xs'1
+xs'1 = [2..100]
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldr}
+\begin{minted}{haskell}
+-- Evaluate
+(+) 1 rest1
+|
+rest1 = (+) 2 rest2
+
+-- Heap
+rest1 = foldr (+) 0 xs'1
+rest2 = foldr (+) 0 xs'2
+xs'2 = [3..100]
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldr}
+\begin{minted}{haskell}
+-- Evaluate
+(+) 1 rest1
+|
+rest1 = (+) 2 rest2
+|
+rest2 = (+) 3 rest3
+|
+rest3 = (+) 4 rest4
+|
+...
+|
+rest99 = (+) 100 rest100
+|
+rest100 = 0
+
+-- Heap -- so big it won't fit on the slide
+...
 \end{minted}
 \end{frame}
 
