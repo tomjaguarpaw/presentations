@@ -18,8 +18,8 @@
 \end{frame}
 
 \begin{frame}
-\frametitle{A nice frame}
-\framesubtitle{Subtitle}
+\frametitle{Mysterious things}
+\framesubtitle{that you may have heard about lazy evaluation}
 
 \begin{itemize}
 \item graph reduction
@@ -29,11 +29,6 @@
 \item ``delays the evaluation of an expression until its value is needed''
 \item call by need
 \end{itemize}
-
-I hope you will be able to work out everything else from first
-principles.  Not everything is literally correct but it will give you
-the right understanding for everything except the lowest level
-performance hacking.
 
 \end{frame}
 
@@ -50,12 +45,14 @@ performance hacking.
   \item case
   \end{itemize}
 
-  In a function application, the function itself and the arguments
-  must be variables or literals.
+  \begin{itemize}
+    \item function application: function itself and arguments must be
+      variables or literals
 
-  Constructors must be ``saturated'', i.e.\ no missing arguments.
+    \item constructors: must be ``saturated'', i.e.\ no missing arguments.
+  \end{itemize}
 
-  It's a pretty imperative thing.
+  It's a language with a direct operational (or imperative!) reading.
 \end{frame}
 
 \begin{frame}[fragile]
@@ -95,7 +92,7 @@ The result of an evaluation is a ``value''.  A value is
   \framesubtitle{How do we evaluate?}
 
   \begin{itemize}
-  \item literals -- already evaluated
+  \item literals, lambas, constructors -- already evaluated
 
   \item \verb+let x = e in body+: create a closure for \verb+e+ on the
     heap and let \verb+x+ be a pointer to this closure, i.e.\ all
@@ -104,11 +101,13 @@ The result of an evaluation is a ``value''.  A value is
   \item variables \verb+x+: \verb+x+ is a pointer to a closure.
     Evaluate that closure to a value and overwrite its memory location
     with the value (``memoization'').
-  \item constructors -- already evaluated
-  \item lambda -- already evaluated
-  \item \verb+f a+: evaluate \verb+f+ to \verb+\x -> e+
+
+  \item \verb+f a+: evaluate \verb+f+ to \verb+\x -> e+, substitute
+    \verb+a+ and evaluate the result
+
   \item \verb+case e of alts+: evaluate \verb+e+, check which
     alternative matches and evaluate it
+
   \end{itemize}
 
 \end{frame}
@@ -123,6 +122,10 @@ The result of an evaluation is a ``value''.  A value is
   \item The only thing that consumes stack (that we care about) is
     \verb+case+ whilst it is evaluating its scrutinee.
   \end{itemize}
+
+  \begin{minted}{haskell}
+  case scrutinee of ... -> ...
+  \end{minted}
 
 \end{frame}
 
@@ -484,7 +487,7 @@ f = \x -> x + x
 \end{minted}
 \end{frame}
 
-\begin{frame}[t,fragile]
+\begin{frame}[fragile]
 \frametitle{Evaluation}
 \framesubtitle{Primitive addition}
 \begin{minted}{haskell}
@@ -585,10 +588,26 @@ t = 11
 \end{minted}
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Sharing}
+\framesubtitle{Eta reduction}
+
+These evaluate the same way.
+
+\begin{minted}{haskell}
+plus1 x = (+) 1 x
+
+plus1'  = (+) 1
+\end{minted}
+\end{frame}
+
 \begin{frame}[t,fragile]
 \frametitle{Sharing}
+
+These don't evaluate the same way.
+
 \begin{minted}{haskell}
-enum1 = zip enum
+enum1 = zip ns
     where ns = [1..]
 
 
@@ -602,8 +621,11 @@ enum2 xs = zip ns xs
 
 \begin{frame}[t,fragile]
 \frametitle{Sharing}
+
+These don't evaluate the same way.
+
 \begin{minted}{haskell}
-enum1 = zip enum
+enum1 = zip ns
     where ns = [1..]
 
 let enum1 = let ns = [1..]
@@ -620,8 +642,11 @@ let enum2 = \xs -> let ns = [1..]
 
 \begin{frame}[t,fragile]
 \frametitle{Sharing}
+
+These don't evaluate the same way.
+
 \begin{minted}{haskell}
-enum1 = zip enum
+enum1 = zip ns
     where ns = [1..]
 
 let enum1 = let ns = [1..]
@@ -877,6 +902,7 @@ foldl = \f z xs -> case xs of
 
 foldl' = \f z xs -> case xs of
   []    -> z
+  -- In Haskell we would use seq instead of case
   x:xs' -> case f z x of
       z' -> foldl' f z' xs'
 
