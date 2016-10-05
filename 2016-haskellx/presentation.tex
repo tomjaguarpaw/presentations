@@ -573,4 +573,56 @@ t = 11
 \end{minted}
 \end{frame}
 
+\begin{frame}[t,fragile]
+\frametitle{Sharing}
+\begin{minted}{haskell}
+enum1 = zip enum
+    where ns = [1..]
+
+
+
+
+
+enum2 xs = zip ns xs
+    where ns = [1..]
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Sharing}
+\begin{minted}{haskell}
+enum1 = zip enum
+    where ns = [1..]
+
+let enum1 = let ns = [1..]
+            in zip ns
+
+
+enum2 xs = zip ns xs
+    where ns = [1..]
+
+let enum2 = \xs -> let ns = [1..]
+                   in zip ns xs
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{Sharing}
+\begin{minted}{haskell}
+enum1 = zip enum
+    where ns = [1..]
+
+let enum1 = let ns = [1..]
+            in zip ns
+-- ns is shared by all invocations of enum1
+
+enum2 xs = zip ns xs
+    where ns = [1..]
+
+let enum2 = \xs -> let ns = [1..]
+                   in zip ns xs
+-- ns is created afresh by each invocations of enum2
+\end{minted}
+\end{frame}
+
 \end{document}
