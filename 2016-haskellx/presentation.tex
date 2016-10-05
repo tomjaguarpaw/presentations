@@ -625,4 +625,232 @@ let enum2 = \xs -> let ns = [1..]
 \end{minted}
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+foldl = \f z xs -> case xs of
+  []    -> z
+  x:xs' -> let z' = f z x
+           in foldl f z' xs'
+
+
+-- Evaluate
+foldl (+) 0 [1..100]           
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+case [1..100] of
+  []    -> 0
+  x:xs' -> let z' = (+) 0 x
+           in foldl (+) z' xs'
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+foldl (+) z'1 xs'1
+
+-- Heap
+xs'1 = [2..100]
+z'1 = (+) 0 1
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+case [2..100] of
+  []    -> z
+  x:xs' -> let z' = (+) z'1 x
+           in foldl (+) z' xs'
+
+-- Heap
+xs'1 = [2..100]
+z'1 = (+) 0 1
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+foldl (+) z'2 xs'2
+
+-- Heap
+xs'2 = [3..100]
+z'1 = (+) 0 1
+z'2 = (+) z'1 2
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+foldl (+) z'3 xs'3
+
+-- Heap
+xs'3 = [4..100]
+z'1 = (+) 0 1
+z'2 = (+) z'1 2
+z'3 = (+) z'2 3
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+foldl (+) z'4 xs'4
+
+-- Heap
+xs'4 = [5..100]
+z'1 = (+) 0 1
+z'2 = (+) z'1 2
+z'3 = (+) z'2 3
+z'4 = (+) z'3 4
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+foldl (+) z'100 xs'100
+
+-- Heap
+xs'100 = []
+z'1 = (+) 0 1
+z'2 = (+) z'1 2
+z'3 = (+) z'2 3
+z'4 = (+) z'3 4
+...
+z'100 = (+) z'99 100
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+z'100
+
+-- Heap
+xs'100 = []
+z'1 = (+) 0 1
+z'2 = (+) z'1 2
+z'3 = (+) z'2 3
+z'4 = (+) z'3 4
+...
+z'100 = (+) z'99 100
+-- ``Building up a long chain of thunks''
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+(+) z'99 100
+
+-- Heap
+xs'100 = []
+z'1 = (+) 0 1
+z'2 = (+) z'1 2
+z'3 = (+) z'2 3
+z'4 = (+) z'3 4
+...
+z'100 = (+) z'99 100
+-- ``Building up a long chain of thunks''
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+(+) z'99 100
+|
+z'99
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+(+) z'99 100
+|
+(+) z'98 99
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+(+) z'99 100
+|
+(+) z'98 99
+|
+z'98
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+(+) z'99 100
+|
+(+) z'98 99
+|
+(+) z'97 98
+|
+...
+(+) z'1 2
+|
+(+) 0 1
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+(+) z'99 100
+|
+(+) z'98 99
+|
+(+) z'97 98
+|
+...
+(+) z'1 2
+|
+1
+\end{minted}
+\end{frame}
+
+\begin{frame}[t,fragile]
+\frametitle{foldl}
+\begin{minted}{haskell}
+-- Evaluating
+(+) z'99 100
+|
+(+) z'98 99
+|
+(+) z'97 98
+|
+...
+3
+\end{minted}
+\end{frame}
+
 \end{document}
