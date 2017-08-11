@@ -17,7 +17,7 @@ workplace = proc () -> do
   employee <- queryTable employees -< ()
   returnA -< (eName employee, eCountry employee)
 
--- printRows (Nothing :: Maybe (String, String)) workplace
+
 
 
 -- # Restriction
@@ -30,7 +30,7 @@ ukEmployees = proc () -> do
 
   returnA -< employee
 
--- printRows (Nothing :: Maybe Employee) ukEmployees
+
 
 
 -- restrict :: QueryArr (Column PGBool) ()
@@ -52,7 +52,7 @@ managerOf = proc () -> do
 
   returnA -< (eName employee, mManager manager)
 
--- printRows (Nothing :: Maybe (String, String)) managerOf
+
 
 
 
@@ -69,7 +69,7 @@ totalLinesByEmployeeCountry
 totalLinesByEmployeeCountry =
   aggregate (PP.p3 (groupBy, groupBy, Opaleye.sum)) linesByEmployeeCountry
 
--- printRows (Nothing :: Maybe (String, String, Int64)) totalLinesByEmployeeCountry
+
 
 
 
