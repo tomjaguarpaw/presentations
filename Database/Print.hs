@@ -6,6 +6,7 @@ module Print where
 import Opaleye
 import qualified Database.PostgreSQL.Simple as PGS
 import Data.Profunctor.Product.Default (Default)
+import Data.Maybe (fromMaybe)
 
 connectInfo :: PGS.ConnectInfo
 connectInfo =  PGS.ConnectInfo { PGS.connectHost     = "212.71.249.246"
@@ -26,4 +27,4 @@ printRows _ q = do
   mapM_ print rows
 
 printSql :: Default Unpackspec a a => Query a -> IO ()
-printSql = putStrLn . showSqlForPostgres
+printSql = putStrLn . fromMaybe "Empty query" . showSqlForPostgres
